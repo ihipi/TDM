@@ -13,7 +13,7 @@ from tools import API_ID, SECRET, TVISOURL
 import tools
 from tdm import dialegs
 
-class TViso(object):
+class TViso:
     '''
     classdocs
     '''

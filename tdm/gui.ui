@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>troçDeManta</string>
   </property>
+  <property name="tabShape">
+   <enum>QTabWidget::Triangular</enum>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="0">
@@ -42,6 +45,12 @@
        <layout class="QGridLayout" name="gridLayout_5">
         <item row="0" column="0">
          <widget class="QFrame" name="frame_2">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>125</height>
+           </size>
+          </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -49,41 +58,101 @@
            <enum>QFrame::Raised</enum>
           </property>
           <layout class="QGridLayout" name="gridLayout_7">
-           <item row="5" column="1">
-            <widget class="QGroupBox" name="gb_tipus">
-             <property name="title">
-              <string>Tipus</string>
+           <item row="1" column="1">
+            <widget class="QFrame" name="frame_3">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>75</height>
+              </size>
              </property>
-             <property name="flat">
-              <bool>false</bool>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
              </property>
-             <layout class="QGridLayout" name="gridLayout_16" columnstretch="0,0,0,0">
-              <item row="0" column="3">
-               <widget class="QCheckBox" name="cb_4">
-                <property name="text">
-                 <string>Programa TV</string>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_8">
+              <item>
+               <widget class="QGroupBox" name="gb_tipus">
+                <property name="title">
+                 <string>Tipus</string>
+                </property>
+                <property name="flat">
+                 <bool>false</bool>
+                </property>
+                <layout class="QGridLayout" name="gridLayout_16" columnstretch="0,0,0,0">
+                 <item row="0" column="3">
+                  <widget class="QCheckBox" name="cb_4">
+                   <property name="text">
+                    <string>Programa TV</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QCheckBox" name="cb_1">
+                   <property name="text">
+                    <string>Serie TV</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QCheckBox" name="cb_2">
+                   <property name="text">
+                    <string>Pel·licula</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QCheckBox" name="cb_3">
+                   <property name="text">
+                    <string>Documental</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="Line" name="line">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
                 </property>
                </widget>
               </item>
-              <item row="0" column="0">
-               <widget class="QCheckBox" name="cb_1">
-                <property name="text">
-                 <string>Serie TV</string>
+              <item>
+               <widget class="QGroupBox" name="groupBox">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>2</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
                 </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QCheckBox" name="cb_2">
-                <property name="text">
-                 <string>Pel·licula</string>
+                <property name="title">
+                 <string>LLista</string>
                 </property>
-               </widget>
-              </item>
-              <item row="0" column="2">
-               <widget class="QCheckBox" name="cb_3">
-                <property name="text">
-                 <string>Documental</string>
-                </property>
+                <layout class="QHBoxLayout" name="horizontalLayout_7">
+                 <item>
+                  <widget class="QRadioButton" name="radioLocal">
+                   <property name="text">
+                    <string>Les meus videos</string>
+                   </property>
+                   <property name="checkable">
+                    <bool>true</bool>
+                   </property>
+                   <property name="checked">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QRadioButton" name="radioGlobal">
+                   <property name="text">
+                    <string>Online</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </widget>
               </item>
              </layout>
@@ -103,46 +172,11 @@
              </item>
             </layout>
            </item>
-           <item row="3" column="1">
-            <widget class="QGroupBox" name="groupBox">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>2</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="title">
-              <string>LLista</string>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_8" rowstretch="0">
-              <item row="0" column="0">
-               <widget class="QRadioButton" name="radioLocal">
-                <property name="text">
-                 <string>Les meus videos</string>
-                </property>
-                <property name="checkable">
-                 <bool>true</bool>
-                </property>
-                <property name="checked">
-                 <bool>false</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="3">
-               <widget class="QRadioButton" name="radioGlobal">
-                <property name="text">
-                 <string>Online</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
           </layout>
          </widget>
         </item>
         <item row="1" column="0">
-         <widget class="QFrame" name="frame_3">
+         <widget class="QFrame" name="mediaBaix">
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -151,7 +185,7 @@
           </property>
           <layout class="QGridLayout" name="gridLayout_6">
            <item row="2" column="5">
-            <widget class="QGroupBox" name="groupBox_3">
+            <widget class="QGroupBox" name="mediaInfo">
              <property name="title">
               <string>Informació</string>
              </property>
@@ -163,7 +197,7 @@
              </property>
              <layout class="QGridLayout" name="gridLayout_10">
               <item row="1" column="0">
-               <widget class="QFrame" name="frame_5">
+               <widget class="QFrame" name="mediaInfoDown">
                 <property name="frameShape">
                  <enum>QFrame::StyledPanel</enum>
                 </property>
@@ -176,7 +210,7 @@
                    <property name="minimumSize">
                     <size>
                      <width>0</width>
-                     <height>200</height>
+                     <height>0</height>
                     </size>
                    </property>
                    <property name="alternatingRowColors">
@@ -209,7 +243,7 @@
                </widget>
               </item>
               <item row="0" column="0">
-               <widget class="QFrame" name="frame_4">
+               <widget class="QFrame" name="mediaInfoUp">
                 <property name="frameShape">
                  <enum>QFrame::StyledPanel</enum>
                 </property>
@@ -302,7 +336,7 @@
                       <property name="minimumSize">
                        <size>
                         <width>200</width>
-                        <height>300</height>
+                        <height>0</height>
                        </size>
                       </property>
                       <property name="maximumSize">
@@ -546,6 +580,9 @@
                <height>16777215</height>
               </size>
              </property>
+             <property name="sortingEnabled">
+              <bool>true</bool>
+             </property>
              <column>
               <property name="text">
                <string>NOM</string>
@@ -558,8 +595,8 @@
              </column>
             </widget>
            </item>
-           <item row="0" column="3">
-            <widget class="QGroupBox" name="groupBox_2">
+           <item row="0" column="2">
+            <widget class="QGroupBox" name="torrent_info">
              <property name="title">
               <string>Informació</string>
              </property>
@@ -592,16 +629,6 @@
                </widget>
               </item>
              </layout>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <widget class="Line" name="line">
-             <property name="cursor">
-              <cursorShape>SplitHCursor</cursorShape>
-             </property>
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
             </widget>
            </item>
           </layout>

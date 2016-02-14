@@ -4,9 +4,9 @@ import sys, os
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QBrush
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTreeWidgetItem, QFileDialog
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTreeWidgetItem, QFileDialog, QSplitter, QHBoxLayout, QFrame
 
-from tools import torrentsearch, GUI, setconfig,getconfig, MEDIATYPE, ROOTDB
+from tools import torrentsearch, GUI, setconfig,getconfig, MEDIATYPE, ROOTDB, transmision as tr
 import tools
 from tdm.dialegs import TVisoLogin
 # from tools.torrentsearch import  BUSCADORS
@@ -58,6 +58,13 @@ class Ventana(QMainWindow):
         ###########################################################
         ###            PESTANYA TORRENTS                      #####
         ###########################################################
+
+        torrent_spliter = QSplitter(Qt.Horizontal)
+        torrent_spliter.addWidget(self.treeResultat)
+        torrent_spliter.addWidget(self.torrent_info)
+        self.frameBaix.layout().addWidget(torrent_spliter)
+        # self.wBaix.setLayout(QHBoxLayout)
+        # f.addWidget(torrent_spliter)
         self.buto_busqueda.clicked.connect(self.buscaEvent)
         self.btnDownload.clicked.connect(lambda: self.download(self.treeResultat.currentItem()))
 
@@ -65,6 +72,16 @@ class Ventana(QMainWindow):
         ###########################################################
         ###            PESTANYA SERIES                        #####
         ###########################################################
+
+
+        hsplit= QSplitter(Qt.Horizontal)
+        hsplit.addWidget(self.listShows)
+        hsplit.addWidget(self.mediaInfo)
+        self.mediaBaix.layout().addWidget(hsplit)
+        vsplt= QSplitter(Qt.Vertical)
+        vsplt.addWidget(self.mediaInfoUp)
+        vsplt.addWidget(self.mediaInfoDown)
+        self.mediaInfo.layout().addWidget(vsplt)
 
 
         #global\Local
@@ -114,7 +131,8 @@ class Ventana(QMainWindow):
         ###########################################################
     def download(self, item):
         # TODO agafar un torrent i passarlo al transmission
-        pass
+        print(item.text(1))
+        tr.addtorrent(item.text(1))
 
     def setmediadirectory(self, tipus):
         media_dir = None

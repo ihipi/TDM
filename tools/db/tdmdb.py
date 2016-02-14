@@ -151,6 +151,7 @@ class TDMDB():
             tviso =  TViso()
             print('##'*60,'\nFil numero : {},\t codi: {},\t tipus:{}\n'.format(fil,serie, tipus),'##'*60)
             res = tviso.getFullInfo(serie, tipus)
+
             try:
                 if isinstance(res['images'], dict):
                     posterFile = ROOTDB+'/imatges/'+serie+"_"+ res['imdb'] +"_poster.jpg"
@@ -274,7 +275,7 @@ class TDMDB():
         res = tviso.getUserSumary()
         image_dict = dict()
         #busquem totes les imatges que tenim guardades
-        for file in os.listdir(os.path.dirname(__file__)+'/imatges/'):
+        for file in os.listdir(ROOTDB+'/imatges/'):
             if file[-5:] != "_dict":
                 idm, imdb, tipe = file.split('_')
                 # si no existeix la entrada la creem
@@ -396,19 +397,30 @@ class TDMDB():
     def getCollectionList(self, table, filtre=None, *tipus):
         extra = ' ORDER BY name DESC'
         ordre = "SELECT name, media, tviso_id FROM " + table
-        if isinstance(filtre, str) and len(filtre) > 2:
-                ordre = ordre + " WHERE instr(UPPER(name) , UPPER('{}'))>0".format(filtre)
+        ordretipus = ordrefiltre =None
+        if isinstance(filtre, str) and len(filtre) > 1:
+            ordrefiltre = "instr(UPPER(name) , UPPER('{}'))>0".format(filtre)
 
-#         ordre += extra
-#         print(filtre)
-        print(ordre)
         # filtrar el tipus de video per a la llista
         if len(tipus[0]) != 0:
-            # print(tipus[0])
-            ordre += " WHERE media = " + str(tipus[0][0])
-            if len(tipus[0]) > 1:
-                for tip in tipus[0][1:]:
-                    ordre += " OR media = " + str(tip)
+            print("tipus:",tipus[0])
+            tip=""
+            for t in tipus[0]:
+                print(t)
+                tip+=str(t) + ","
+            print(tip)
+            ordretipus= "media IN (" + tip[:-1] + ")"
+            # if len(tipus[0]) > 1:
+            #     for tip in tipus[0][1:]:
+            #         ordre += " OR media = " + str(tip)
+        if ordrefiltre:
+            ordre += " WHERE " + ordrefiltre
+            if ordretipus:
+                ordre += " AND " + ordretipus
+        else:
+            if ordretipus:
+                ordre += " WHERE " + ordretipus
+
         print(ordre)
         self.c.execute(ordre)
         return [[str(row[2]),str(row[0]),str(row[1])] for  row in self.c]
