@@ -1,6 +1,21 @@
 import requests
 from tools import get_bs
 
+
+
+
+def busca(motor, paraula, divixserie = False):
+    print('torrentsearch:',motor,paraula, divixserie)
+    motorB = BUSCADORS[motor]
+
+    if motor == 'divixtotal':
+        return motorB.busca(paraula,divixserie)
+    elif motor == 'elitetorrent':
+        return motorB.busca(paraula)
+    elif motor == 'kickass':
+        pass
+
+
 class Eliterorrent():
     def __init__(self):
 
@@ -42,10 +57,9 @@ class Eliterorrent():
         return descarga
 
 class DivixTotal(object):
-    '''
-    classdocs
-    '''
-
+    """
+    DIVIXTOTAL
+    """
 
     def __init__(self):
         '''
@@ -56,8 +70,6 @@ class DivixTotal(object):
         self.cat = {'busca' : '' + self.url + 'buscar.php?busqueda=',
                           'series':''+self.url+'series/',
                           'pelicules':''+self.url+'peliculas/'}
-
-
 
     def busca(self,busqueda, serie = False):
         '''
@@ -92,27 +104,31 @@ class DivixTotal(object):
         return torrents
 
     # TODO arreglar la busqueda per series de divixtotal
+    def llistaSeries(self, inicial=None):
+        '''
+        Busca el llistat sencer de series de divixtotal
 
-    # def llistaSeries(self, inicial=None):
-    #     '''
-    #     Busca el llistat sencer de series de divixtotal
-    #
-    #     '''
-    #     soup = get_bs(self.cat['series'])
-    #     lis = soup.find('li', {'class':'li_listadoseries'})
-    #     print(lis)
-    #     for li in lis:
-    #         lletra = None
-    #         if li.font:
-    #             lletra= li.font.text
-    #             print(lletra)
-    #         for a in li.find_all('a'):
-    #             if inicial:
-    #                 if lletra in inicial:
-    #                     print(a.get('title'),'\t\t\t',''+self.url+a.get( 'href'))
-    #
-    #             else:
-    #                 print(a.get('title'),'\t\t\t',''+self.url+a.get( 'href'))
+        '''
+        soup = get_bs(self.cat['series'])
+        lis = soup.find('li', {'class':'li_listadoseries'})
+        print(lis)
+        for li in lis:
+            lletra = None
+            if li.font:
+                lletra= li.font.text
+                print(lletra)
+            for a in li.find_all('a'):
+                if inicial:
+                    if lletra in inicial:
+                        print(a.get('title'),'\t\t\t',''+self.url+a.get( 'href'))
+
+                else:
+                    print(a.get('title'),'\t\t\t',''+self.url+a.get( 'href'))
+
+BUSCADORS = {'divixtotal':DivixTotal(),
+                  'elitetorrent':Eliterorrent(),
+                  'kickass':''}
+
 
 #dvx = DivixTotal()
 #dvx.llistaSeries('B')

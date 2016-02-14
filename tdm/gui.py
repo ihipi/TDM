@@ -4,9 +4,12 @@ import sys, os
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QBrush
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTreeWidgetItem
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTreeWidgetItem, QFileDialog
 
-from tools import torrentsearch, GUI
+from tools import torrentsearch, GUI, setconfig,getconfig, MEDIATYPE, ROOTDB
+import tools
+from tdm.dialegs import TVisoLogin
+# from tools.torrentsearch import  BUSCADORS
 from tools.db.tdmdb import TDMDB
 
 
@@ -21,10 +24,10 @@ class Ventana(QMainWindow):
         uic.loadUi(GUI, self)
 
         # self.setWindowTitle("Cambiando el título de la ventana")
-        self.db = TDMDB(os.path.dirname(__file__)+bd)
-        print(os.path.dirname(__file__)+bd)
+        self.db = TDMDB()
+        print(TDMDB)
         self.tabs = []
-        for motor in torrentsearch.buscadors.keys():
+        for motor in torrentsearch.BUSCADORS.keys():
             self.comboMotors.addItem(motor)
         self.index =0
         ###
@@ -44,6 +47,14 @@ class Ventana(QMainWindow):
         ###                                                   #####
         ###########################################################
 
+        ###########################################################
+        ###            PESTANYA CONFIGURACIO                  #####
+        ###########################################################
+        self.btn_dirSeries.setText(getconfig()['dir_series'])
+        self.btn_dirPelis.setText(getconfig()['dir_pelis'])
+        self.btn_dirSeries.clicked.connect(lambda: self.setmediadirectory(1))
+        self.btn_dirPelis.clicked.connect(lambda: self.setmediadirectory(2))
+        self.btn_tviso.clicked.connect(self.callTvisoLogin)
         ###########################################################
         ###            PESTANYA TORRENTS                      #####
         ###########################################################
@@ -90,8 +101,13 @@ class Ventana(QMainWindow):
 #             event.accept()
 #         else: event.ignore()
 #
-
-
+        ###########################################################
+        #                        CONFIGURACIO                     #
+        ###########################################################
+    def callTvisoLogin(self):
+        self.dialog_02 = TVisoLogin()
+        self.dialog_02.show()
+        self.dialog_02.raise_()
 
         ###########################################################
         #                        TORRENTS                         #
@@ -100,6 +116,23 @@ class Ventana(QMainWindow):
         # TODO agafar un torrent i passarlo al transmission
         pass
 
+    def setmediadirectory(self, tipus):
+        media_dir = None
+        if tipus == 1:
+            media_dir = 'dir_series'
+        elif tipus == 2:
+            media_dir = 'dir_pelis'
+        fileName = QFileDialog.getExistingDirectory(self, 'Dialog Title')
+        if fileName:
+            print(fileName)
+            if tipus == 1:
+                self.line_series.setText(fileName)
+                setconfig(dir_series = fileName)
+                print(tools.localmedia(media_dir))
+            elif tipus == 2:
+                self.line_pelis.setText(fileName)
+                setconfig(dir_pelis = fileName)
+                print(tools.localmedia(media_dir))
 
 
     def buscaEvent(self):
@@ -184,7 +217,7 @@ class Ventana(QMainWindow):
         """
         data=None
         pixmap = QPixmap()
-        dir =os.path.dirname(__file__)+'/db/imatges/'
+        dir =ROOTDB+'/imatges/'
 
         # en cas de ser de la coleccio local
         #nomes cal dfer servir Load
@@ -218,31 +251,30 @@ class Ventana(QMainWindow):
         if local:
             print(item.text(0))
 
-            tvmaID = item.text(0)
+            tviso_id = item.text(0)
             # info =self.db.getShowId(tvmaID)[0]
-            self.db.c.execute('SELECT * FROM mycollection WHERE tviso_id=?', (item.text(0), ))
-            info = self.db.c.fetchone()
-            print(info)
-            print('local:\n', info)
+            self.db.c.execute('SELECT tviso_id, media,seasons, imatge, plot, name FROM mycollection WHERE tviso_id=?', (item.text(0), ))
+            idm,media, seasons, imatge , plot, name = self.db.c.fetchone()
+            print('local:\n', idm,media, seasons, imatge , plot, name)
 #             self.labelTitol.setText(info[0][2])
 #             self.labelRating.setText(info[0][4])
 #             self.setImage(info[0][3])
 #             self.setSinopsy(info[0][5])
 #             self.addEpisodis(tvmaID)
         else:
-            tvmaID = item.text(0)
-            info =self.db.getShowId(tvmaID)[0]
+            tviso_id = item.text(0)
+            info =self.db.getCollectionShowId(tviso_id)[0]
             # self.db.c.execute('SELECT * FROM myseries WHERE tvmazeID=?',[item.text(0),])
             # info =[row for  row in self.db.c]
             print('Global:\n', info)
 
-        self.labelTitol.setText(str(info[3]))
-        self.labelRating.setText(str(info[2]))
-        self.set_image(item.text(0), str(info[2]))
-        self.setSinopsy(info[5])
+        self.labelTitol.setText(name)
+        self.labelRating.setText(str(seasons))
+        self.set_image(item.text(0), str(media))
+        self.setSinopsy(plot)
         print('item seleccionat: ', item.text(1), item.text(2))
         if item.text(2) == '1':
-            self.addEpisodis(tvmaID)
+            self.addEpisodis(tviso_id)
 
     def set_episodi_info(self, item):
         try:

@@ -1,7 +1,1 @@
-{"user_token": "11d9a80483d08a30358be205705c163a",
-  "usuari": "albert.giro@gmail.com",
-  "auth_token": "73cc1aa3eb35ba41f09d75fe4f65c208",
-  "lastUpdate": "2016-37-08",
-  "password": "1234567",
-  "actualitzacio_freq": 1,
-  "auth_expires_date": 1455015275}
+{"dir_pelis": "/run/user/1000/gvfs/smb-share:server=192.168.1.150,share=pelis", "dir_series": "/run/user/1000/gvfs/smb-share:server=192.168.1.150,share=series", "auth_token": "c46d27df5edb3e2fa9fcd7427802079c", "usuari": "albert.giro@gmail.com", "lastUpdate": "2016-02-13", "auth_expires_date": 1444439746, "actualitzacio_freq": 1, "user_token": "1dbb6660c9795ce9a549145cffcd702e", "password": "1234567"}
