@@ -118,7 +118,7 @@ class TViso(object):
         :return:
         """
         gets = {'auth_token':self.auth_token}
-        return requests.get(TVISOURL + '/media/list/all?',params = gets)
+        return requests.get(TVISOURL + '/media/list/all?',params = gets).json()
 
     def getFollowing(self):
         gets={'auth_token':self.auth_token,'user_token':self.user_token}
@@ -169,6 +169,7 @@ class TViso(object):
         return requests.get(TVISOURL+'/user/media/collection_summary?', params = gets).json()
 
 # tv = TViso()
+# al=tv.getAllMediaList()
 # tv.getUserToken()
 # print(tv.getUserSumary())
 # print(tv.searchTitle('fargo'))
@@ -176,8 +177,8 @@ class TViso(object):
 #pprint(Tv.getUserMedia().json(),depth = 5)
 #
 # full = tv.getFullInfo(2078,1)
-# for k in full['seasons'].keys():
-#     print("{}:\n{}".format(k,full['seasons'][k]))
+# for k in al['results']:
+#     print("{}:\n{}".format(k,al['results'][k]))
 # full = tv.getUserSumary()
 # for k in full.keys():
 #     print("{}:\n{}".format(k,full[k]))
