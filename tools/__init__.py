@@ -3,6 +3,39 @@ from bs4 import BeautifulSoup
 # from tdm.dialegs import dialegdirector
 import PyQt5.QtWidgets
 
+class Media():
+    def __init__(self,**kargs):
+
+        self.idm=None
+        self.imdb = None
+        self.nom = None
+        self.any = None
+        self.plot = None
+        self.tipus = None
+        self.imatge = None
+
+        for k in kargs.keys():
+            if k == 'idm':
+                self.idm=kargs[k]
+            elif k== 'imdb':
+                self.imdb = kargs[k]
+            elif k == 'name':
+                self.nom = kargs[k]
+            elif k == 'year':
+                self.any = kargs[k]
+            elif k == 'plot':
+                self.plot = kargs[k]
+            elif k == 'mediaType':
+                self.tipus = kargs[k]
+            elif k == 'image':
+                self.imatge = TVISOURL + "/ES" + IMG['posterL'] + kargs[k]
+
+
+
+
+
+
+
 def get_bs(url):
     res = requests.get(url)
     return BeautifulSoup(res.text, 'html.parser')
@@ -112,7 +145,8 @@ TVISO_PASS = ''
 # ############################################
 # Proves
 # ############################################
-
+m = Media(image = '/4b/e5/4be5694e73e65e2ef2ddc746240f4de2.jpg')
+print(m.imatge)
 # print([dir[0] for dir in localmedia('dir_pelis')])
 
 # filtra_torrents(tipus = 1, nom = 'la cosa nstrasS20E34')

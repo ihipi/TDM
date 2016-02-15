@@ -39,21 +39,29 @@ class Eliterorrent():
         for li in lis:
             torrents[li.div.a.get('title')]= self.url+li.a.get('href')
         print(torrents)
+        for n in torrents.keys():
+            torrents[n] = self.getTorrent(torrents[n])
         return torrents
+
         print('ended')
 
     def getTorrent(self, url):
+
         soup = get_bs(url)
         links = soup.find('div', attrs={'class':'enlace_descarga'})
         descarga =[]
         print(links)
-        for a in links.find_all('a'):
-            print(a)
-            if a.get('href')[:6] != 'magnet':
-                descarga.append(self.url+a.get('href'))
-            else:
-                descarga.append(a.get('href'))
-        print(descarga)
+        try:
+            for a in links.find_all('a'):
+
+                if a.get('href')[:6] != 'magnet':
+                    descarga.append(self.url+a.get('href'))
+                else:
+                    descarga.append(a.get('href'))
+        except Exception == 'NoneType':
+            print('sense resposta')
+        except Exception as e:
+            print("error: {}\n Al aconseguir els links de elitetorrent".format(e))
         return descarga
 
 class DivixTotal(object):
@@ -129,7 +137,8 @@ BUSCADORS = {'divixtotal':DivixTotal(),
                   'elitetorrent':Eliterorrent(),
                   'kickass':''}
 
-
+# e =Eliterorrent()
+# e.busca('gran estafa')
 #dvx = DivixTotal()
 #dvx.llistaSeries('B')
 # dvx.busca('fargo')
