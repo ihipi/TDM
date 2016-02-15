@@ -18,7 +18,7 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="0" column="0">
+    <item row="0" column="1">
      <widget class="QTabWidget" name="conf">
       <property name="enabled">
        <bool>true</bool>
@@ -36,7 +36,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">
@@ -488,73 +488,7 @@
         <string>Torrents</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_3">
-        <item row="0" column="1">
-         <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="0">
-           <widget class="QLineEdit" name="text_busqueda">
-            <property name="minimumSize">
-             <size>
-              <width>150</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>400</width>
-              <height>16777215</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QPushButton" name="buto_busqueda">
-            <property name="text">
-             <string>Busca</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QComboBox" name="comboMotors"/>
-          </item>
-          <item row="1" column="1">
-           <widget class="QGroupBox" name="groupBox_4">
-            <property name="title">
-             <string>Opcions</string>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_9">
-             <item row="1" column="3">
-              <widget class="QLineEdit" name="lineEdit_3"/>
-             </item>
-             <item row="0" column="0">
-              <widget class="QCheckBox" name="check_series">
-               <property name="text">
-                <string>Serie</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="2">
-              <widget class="QLabel" name="label_2">
-               <property name="text">
-                <string>Sense</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="3">
-              <widget class="QLineEdit" name="lineEdit_2"/>
-             </item>
-             <item row="0" column="2">
-              <widget class="QLabel" name="label">
-               <property name="text">
-                <string>Amb</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item row="1" column="1">
+        <item row="2" column="1">
          <widget class="QFrame" name="frameBaix">
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
@@ -634,6 +568,135 @@
           </layout>
          </widget>
         </item>
+        <item row="0" column="1">
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="text_busqueda">
+            <property name="minimumSize">
+             <size>
+              <width>150</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>400</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QComboBox" name="comboMotors"/>
+          </item>
+          <item row="0" column="0">
+           <widget class="QPushButton" name="buto_busqueda">
+            <property name="text">
+             <string>Busca</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="1" column="1">
+         <widget class="QFrame" name="frame_4">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>100</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_8">
+           <property name="margin">
+            <number>5</number>
+           </property>
+           <property name="spacing">
+            <number>5</number>
+           </property>
+           <item row="0" column="2">
+            <widget class="QGroupBox" name="groupBox_4">
+             <property name="title">
+              <string>Opcions DivixTotal</string>
+             </property>
+             <property name="rowSpan" stdset="0">
+              <number>3</number>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_9" rowstretch="0,0">
+              <item row="0" column="0">
+               <widget class="QCheckBox" name="check_series">
+                <property name="text">
+                 <string>Serie</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="0" column="4">
+            <widget class="QGroupBox" name="groupBox_2">
+             <property name="title">
+              <string>Opcions EliteTorrent</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="Line" name="line_2">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QGroupBox" name="groupBox_3">
+             <property name="maximumSize">
+              <size>
+               <width>400</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="title">
+              <string>opcions generals</string>
+             </property>
+             <layout class="QFormLayout" name="formLayout">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label">
+                <property name="text">
+                 <string>Amb</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLineEdit" name="lineEdit_2"/>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_2">
+                <property name="text">
+                 <string>Sense</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLineEdit" name="lineEdit_3"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="Line" name="line_3">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
        </layout>
       </widget>
       <widget class="QWidget" name="tab_conf">
@@ -663,13 +726,36 @@
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_5">
            <item>
-            <widget class="QPushButton" name="btn_tviso">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Configura Usuari i Contrasenya de TViso&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <widget class="QGroupBox" name="groupBox_8">
+             <property name="title">
+              <string>GroupBox</string>
              </property>
-             <property name="text">
-              <string>TViso</string>
-             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_9">
+              <item>
+               <widget class="QPushButton" name="btn_password">
+                <property name="text">
+                 <string>contrasenya general</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btn_tviso">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Configura Usuari i Contrasenya de TViso&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>TViso</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btn_transmission">
+                <property name="text">
+                 <string>Transmision</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </item>
           </layout>

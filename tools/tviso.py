@@ -172,13 +172,13 @@ class TViso:
 # al=tv.getAllMediaList()
 # tv.getUserToken()
 # print(tv.getUserSumary())
-# print(tv.searchTitle('fargo'))
+# al = tv.searchTitle('fargo')
 #pprint(Tv.getUserCollection().json(),depth = 5)
 #pprint(Tv.getUserMedia().json(),depth = 5)
 #
 # full = tv.getFullInfo(2078,1)
-# for k in al['results']:
-#     print("{}:\n{}".format(k,al['results'][k]))
+# for k in al.keys():
+#     print("{}:\n{}".format(k,al[k]))
 # full = tv.getUserSumary()
 # for k in full.keys():
 #     print("{}:\n{}".format(k,full[k]))

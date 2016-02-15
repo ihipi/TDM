@@ -159,8 +159,8 @@ class TDMDB():
 
 
                     if not os.path.exists(posterFile) and not os.path.exists(backdropFile):
-                        backurl = 'https://img.tviso.com'+'/{}{}{}'.format(res['images']['country'] or 'ES', IMG['fonsL'],res['images']['poster'])
-                        posterurl = 'https://img.tviso.com'+'/{}{}{}'.format(res['images']['country'] or 'ES', IMG['posterL'],res['images']['backdrop'])
+                        backurl = 'https://img.tviso.com'+'/{}{}{}'.format(res['images']['country'] or 'XX', IMG['fonsL'],res['images']['poster'])
+                        posterurl = 'https://img.tviso.com'+'/{}{}{}'.format(res['images']['country'] or 'XX', IMG['posterL'],res['images']['backdrop'])
                         print(posterurl, posterFile )
                         print(backurl, backdropFile )
                         #descarreguem la imatge amb un WGET de consola normal i corrent

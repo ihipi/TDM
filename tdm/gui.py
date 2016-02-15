@@ -6,9 +6,9 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QBrush
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTreeWidgetItem, QFileDialog, QSplitter, QHBoxLayout, QFrame
 
-from tools import torrentsearch, GUI, setconfig,getconfig, MEDIATYPE, ROOTDB, transmision as tr
+from tools import torrentsearch, GUI, setconfig,getconfig, MEDIATYPE, ROOTDB, transmision as tr, tviso as tv
 import tools
-from tdm.dialegs import TVisoLogin
+from tdm.dialegs import TVisoLogin, TransmissionConf
 # from tools.torrentsearch import  BUSCADORS
 from tools.db.tdmdb import TDMDB
 
@@ -21,11 +21,14 @@ class Ventana(QMainWindow):
         # Iniciar el objeto QMainWindow
         QMainWindow.__init__(self)
         # Carregar la configuracio de l'arxiu .ui en el objeto
+        self.dialog_03 = TransmissionConf()
+        self.dialog_02 = TVisoLogin()
         uic.loadUi(GUI, self)
 
         # self.setWindowTitle("Cambiando el título de la ventana")
         self.db = TDMDB()
         print(TDMDB)
+        self.tv = tv.TViso()
         self.tabs = []
         for motor in torrentsearch.BUSCADORS.keys():
             self.comboMotors.addItem(motor)
@@ -55,6 +58,8 @@ class Ventana(QMainWindow):
         self.btn_dirSeries.clicked.connect(lambda: self.setmediadirectory(1))
         self.btn_dirPelis.clicked.connect(lambda: self.setmediadirectory(2))
         self.btn_tviso.clicked.connect(self.callTvisoLogin)
+        self.btn_transmission.clicked.connect(self.callTransmissionConf)
+
         ###########################################################
         ###            PESTANYA TORRENTS                      #####
         ###########################################################
@@ -67,7 +72,7 @@ class Ventana(QMainWindow):
         # f.addWidget(torrent_spliter)
         self.buto_busqueda.clicked.connect(self.buscaEvent)
         self.btnDownload.clicked.connect(lambda: self.download(self.treeResultat.currentItem()))
-
+        self.torrent_temp =[]
 
         ###########################################################
         ###            PESTANYA SERIES                        #####
@@ -83,7 +88,7 @@ class Ventana(QMainWindow):
         vsplt.addWidget(self.mediaInfoDown)
         self.mediaInfo.layout().addWidget(vsplt)
 
-
+        self.media_temp = []
         #global\Local
         self.radioLocal.toggled.connect(self.get_items)
         self.radioGlobal.toggled.connect(self.get_items)
@@ -106,6 +111,8 @@ class Ventana(QMainWindow):
         #al seleccionar un capitol
         # self.treeEpisodis.itemChanged.connect(self.seleccioCapitol)
         self.radioLocal.setChecked(True)
+        # busca a tviso
+        self.btn_busca_media.clicked.connect(lambda: self.get_search(self.line_busca_media.text()))
 
 
 
@@ -122,9 +129,14 @@ class Ventana(QMainWindow):
         #                        CONFIGURACIO                     #
         ###########################################################
     def callTvisoLogin(self):
-        self.dialog_02 = TVisoLogin()
+
         self.dialog_02.show()
         self.dialog_02.raise_()
+
+    def callTransmissionConf(self):
+
+        self.dialog_03.show()
+        self.dialog_03.raise_()
 
         ###########################################################
         #                        TORRENTS                         #
@@ -161,7 +173,7 @@ class Ventana(QMainWindow):
         #busqueda = DivixTotal().busca('fargo',True)
         self.treeResultat.clear()
         for k in busqueda.keys():
-            row = [k,busqueda[k]]
+            row = [k,str(busqueda[k][0])]
             print(row)
             self.treeResultat.insertTopLevelItems(0,[QTreeWidgetItem(self.treeResultat, row)])
 
@@ -205,29 +217,43 @@ class Ventana(QMainWindow):
         Busca i mostra series a la llista lateral
         @param filtra: Text de filtratge pe a la busqueda
         """
+
         self.listShows.clear()
+
         if isinstance(filtra,   bool):
             filtra =''
         table = None
         # comprovem quina llista esta seleccionada Local/Global
         if self.radioLocal.isChecked():
             table = 'mycollection'
-        if self.radioGlobal.isChecked():
-            table = 'series'
+            #  Iterem per poblar||
+            # --------- crida base dades --- (GLOB/LOC,TEXT)
+            tipus = [(1,self.cb_1.isChecked()),(2,self.cb_2.isChecked()),(3,self.cb_3.isChecked()),(4,self.cb_4.isChecked())]
+            print([tip[0] for tip in tipus if tip[1] !=False])
+            for row in self.db.getCollectionList(table, filtra, [tip[0] for tip in tipus if tip[1] !=False]):
 
-
-
-        #  Iterem per poblar||
-        # --------- crida base dades --- (GLOB/LOC,TEXT)
-        tipus = [(1,self.cb_1.isChecked()),(2,self.cb_2.isChecked()),(3,self.cb_3.isChecked()),(4,self.cb_4.isChecked())]
-        print([tip[0] for tip in tipus if tip[1] !=False])
-        for row in self.db.getCollectionList(table, filtra, [tip[0] for tip in tipus if tip[1] !=False]):
-
-            # afegim item
-            # Seleccio deltreeWidget afegir a dalt(columna,[objecte])
-            self.listShows.insertTopLevelItems(0, [QTreeWidgetItem(self.listShows, row)])
-
+                # afegim item
+                # Seleccio deltreeWidget afegir a dalt(columna,[objecte])
+                self.listShows.insertTopLevelItems(0, [QTreeWidgetItem(self.listShows, row)])
 #             print(row)
+
+    def get_search(self, text):
+
+        self.listShows.clear()
+        self.media_temp = self.tv.searchTitle(text)
+        rows = []
+        tipus = [(1,self.cb_1.isChecked()),(2,self.cb_2.isChecked()),(3,self.cb_3.isChecked()),(4,self.cb_4.isChecked())]
+        tip = [tip[0] for tip in tipus if tip[1] !=False]
+        for k in self.media_temp.keys():
+            if isinstance(self.media_temp[k], dict):
+                rows.append([str(self.media_temp[k]['idm']), self.media_temp[k]['name'], str(self.media_temp[k]['mediaType'])])
+        if len(tip)>0:
+            for row in rows:
+                if row[-1] in tip:
+                    self.listShows.insertTopLevelItems(0, [QTreeWidgetItem(self.listShows, row)])
+        else:
+            for row in rows:
+                self.listShows.insertTopLevelItems(0, [QTreeWidgetItem(self.listShows, row)])
 
     def set_image(self, idm, tipus = None):
         """
