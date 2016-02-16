@@ -114,10 +114,6 @@ class Ventana(QMainWindow):
         # busca a tviso
         self.btn_busca_media.clicked.connect(lambda: self.get_search(self.line_busca_media.text()))
 
-
-
-
-
 #     def closeEvent(self, event):
 #         resultat = QMessageBox.question(self,"sortir...","Vols sortir de l'aplicacio?",QMessageBox.Yes | QMessageBox.No)
 #         if resultat == QMessageBox.Yes:
@@ -141,6 +137,7 @@ class Ventana(QMainWindow):
         ###########################################################
         #                        TORRENTS                         #
         ###########################################################
+
     def download(self, item):
         # TODO agafar un torrent i passarlo al transmission
         print(item.text(1))
@@ -164,6 +161,21 @@ class Ventana(QMainWindow):
                 setconfig(dir_pelis = fileName)
                 print(tools.localmedia(media_dir))
 
+    def poblaListShow(self,*tipus):
+        print(tipus)
+        for row in self.media_temp:
+
+            # afegim item
+            # Seleccio deltreeWidget afegir a dalt(columna,[objecte])
+            if len(tipus) > 0:
+                print(row.tipus)
+                if row.tipus in tipus:
+                    fila = [str(row.idm),row.name, str(row.tipus)]
+                    self.listShows.insertTopLevelItems(0, [QTreeWidgetItem(self.listShows, fila)])
+            else:
+                print('else:',row.name)
+                fila = [str(row.idm),row.name, str(row.tipus)]
+                self.listShows.insertTopLevelItems(0, [QTreeWidgetItem(self.listShows, fila)])
 
     def buscaEvent(self):
 #         busqueda = DivixTotal().busca(str(self.text_busqueda.text()),self.check_series.isChecked())
@@ -193,6 +205,7 @@ class Ventana(QMainWindow):
         ###########################################################
         #                           SERIES                        #
         ###########################################################
+
     def deleteShow(self):
         """
         crida la bd per BORRAR una serie de myseries
@@ -230,11 +243,8 @@ class Ventana(QMainWindow):
             # --------- crida base dades --- (GLOB/LOC,TEXT)
             tipus = [(1,self.cb_1.isChecked()),(2,self.cb_2.isChecked()),(3,self.cb_3.isChecked()),(4,self.cb_4.isChecked())]
             print([tip[0] for tip in tipus if tip[1] !=False])
-            for row in self.db.getCollectionList(table, filtra, [tip[0] for tip in tipus if tip[1] !=False]):
-
-                # afegim item
-                # Seleccio deltreeWidget afegir a dalt(columna,[objecte])
-                self.listShows.insertTopLevelItems(0, [QTreeWidgetItem(self.listShows, row)])
+            self.media_temp = self.db.getCollectionList(table, filtra, [tip[0] for tip in tipus if tip[1] !=False])
+            self.poblaListShow()
 #             print(row)
 
     def get_search(self, text):
@@ -243,17 +253,8 @@ class Ventana(QMainWindow):
         self.media_temp = self.tv.searchTitle(text)
         rows = []
         tipus = [(1,self.cb_1.isChecked()),(2,self.cb_2.isChecked()),(3,self.cb_3.isChecked()),(4,self.cb_4.isChecked())]
-        tip = [tip[0] for tip in tipus if tip[1] !=False]
-        for k in self.media_temp.keys():
-            if isinstance(self.media_temp[k], dict):
-                rows.append([str(self.media_temp[k]['idm']), self.media_temp[k]['name'], str(self.media_temp[k]['mediaType'])])
-        if len(tip)>0:
-            for row in rows:
-                if row[-1] in tip:
-                    self.listShows.insertTopLevelItems(0, [QTreeWidgetItem(self.listShows, row)])
-        else:
-            for row in rows:
-                self.listShows.insertTopLevelItems(0, [QTreeWidgetItem(self.listShows, row)])
+        print([tip[0] for tip in tipus if tip[1] !=False])
+        self.poblaListShow([tip[0] for tip in tipus if tip[1] !=False])
 
     def set_image(self, idm, tipus = None):
         """

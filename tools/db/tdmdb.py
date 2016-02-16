@@ -289,10 +289,10 @@ class TDMDB():
                     image_dict[idm][tipe[:-4]]=file
 
 
-        img_file =  open(os.path.dirname(__file__)+'/imatges/imatges_dict', mode='w+')
+        img_file =  open(ROOTDB+'/imatges/imatges_dict', mode='w+')
         json.dump(image_dict,img_file)
         img_file.close()
-        image_file = open(os.path.dirname(__file__)+'/imatges/imatges_dict', mode='r+')
+        image_file = open(ROOTDB+'/imatges/imatges_dict', mode='r+')
         images = json.load(image_file)
         for media in res['collection']['medias'].keys():
             tipus, idm = media.split('-')
@@ -394,25 +394,24 @@ class TDMDB():
 
         self.settime()
 
-    def getCollectionList(self, table, filtre=None, *tipus):
+    def getCollectionList(self, table, filtre=None, *tipus ):
         extra = ' ORDER BY name DESC'
-        ordre = "SELECT name, media, tviso_id FROM " + table
+        ordre = "SELECT * FROM " + table
         ordretipus = ordrefiltre =None
         if isinstance(filtre, str) and len(filtre) > 1:
             ordrefiltre = "instr(UPPER(name) , UPPER('{}'))>0".format(filtre)
 
         # filtrar el tipus de video per a la llista
-        if len(tipus[0]) != 0:
-            print("tipus:",tipus[0])
+        print("tipus:",tipus[0])
+
+        if len(tipus[0]) > 0:
             tip=""
             for t in tipus[0]:
                 print(t)
                 tip+=str(t) + ","
             print(tip)
             ordretipus= "media IN (" + tip[:-1] + ")"
-            # if len(tipus[0]) > 1:
-            #     for tip in tipus[0][1:]:
-            #         ordre += " OR media = " + str(tip)
+
         if ordrefiltre:
             ordre += " WHERE " + ordrefiltre
             if ordretipus:
@@ -423,7 +422,12 @@ class TDMDB():
 
         print(ordre)
         self.c.execute(ordre)
-        return [[str(row[2]),str(row[0]),str(row[1])] for  row in self.c]
+        llista = []
+        for row in self.c:
+            llista.append(tools.Media(**{'imdb' : row[0],'idm' : row[1],'mediaType' : row[2],'name' : row[3],'plot' : row[4],'estat' : row[5],'seasons' : row[6]}))
+        print(llista)
+
+        return llista
 
     def getCollectionShowId(self, idm):
         """
@@ -442,10 +446,15 @@ class TDMDB():
 
 
 # db =TDMDB()
+# for m in db.getCollectionList('mycollection','',*[1,2,3]):
+#     if isinstance(m,tools.Media):
+#         print('info: ',m.info())
+#     else:
+#         print('No')
 # print(db.dbquery('SELECT * FROM mycollection WHERE tviso_id=?', 69))
 #db.settime()
 # print(db.getEpisodes(67))
-# pprint(db.getCollectionList('mycollection'))
+# pprint(db.getCollectionList([tools.Media(**{'imdb' : row[0],'idm' : row[1],'mediaType' : row[2],'name' : row[3],'plot' : row[4],'estat' : row[5],'seasons' : row[6]})row for row in self.c]'mycollection'))
 #db.updatedb()
 # db.c.execute('INSERT OR REPLACE into series values (756,4455,"jhon nieve","imatge")')
 #db.db.commit()

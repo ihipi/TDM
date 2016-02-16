@@ -103,13 +103,23 @@ class TViso:
         Busca videos per titol
         :param self:
         :param title: text a buscar
-        :return: un 'json' amb la informacio de tviso
+        :return: una llista amb objectes media
         """
-        # print('comenca searchTitle', 'https://api.tviso.com/media/search?auth_token='+self.auth_token+"&q='"+title+"'")
         gets = {'auth_token': self.auth_token,
                 'q':title,
                 'country':'ES'}
-        return requests.get('https://api.tviso.com/media/search?',params =gets).json()
+        llista = []
+        j = requests.get('https://api.tviso.com/media/search?',params =gets).json()
+        for k in j.keys():
+            if isinstance(j[k], dict):
+                print(j)
+                llista.append(tools.Media(**{'idm' : j[k]['idm'],'imdb' : j[k]['imdb'],'name' : j[k]['name'],
+                                             'plot' : j[k]['plot'],
+                                             'image' : j[k]['images']['poster'],
+                                             'year' : j[k]['year'],
+                                             'mediaType': j[k]['mediaType']}))
+        print(llista)
+        return llista
 
     # TODO mirar de que funcioni i crear la base de dades general
     def getAllMediaList(self):
@@ -177,8 +187,12 @@ class TViso:
 #pprint(Tv.getUserMedia().json(),depth = 5)
 #
 # full = tv.getFullInfo(2078,1)
-# for k in al.keys():
-#     print("{}:\n{}".format(k,al[k]))
+
+
+# for k in al:
+#     print("{}:".format(k.info()))
+
+
 # full = tv.getUserSumary()
 # for k in full.keys():
 #     print("{}:\n{}".format(k,full[k]))

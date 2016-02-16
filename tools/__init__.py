@@ -4,11 +4,14 @@ from bs4 import BeautifulSoup
 import PyQt5.QtWidgets
 
 class Media():
+    """
+    Classe que porta tota la informacio dun media
+    """
     def __init__(self,**kargs):
 
         self.idm=None
         self.imdb = None
-        self.nom = None
+        self.name = None
         self.any = None
         self.plot = None
         self.tipus = None
@@ -20,15 +23,25 @@ class Media():
             elif k== 'imdb':
                 self.imdb = kargs[k]
             elif k == 'name':
-                self.nom = kargs[k]
+                self.name = kargs[k]
             elif k == 'year':
-                self.any = kargs[k]
+                self.year = kargs[k]
             elif k == 'plot':
                 self.plot = kargs[k]
             elif k == 'mediaType':
                 self.tipus = kargs[k]
             elif k == 'image':
-                self.imatge = TVISOURL + "/ES" + IMG['posterL'] + kargs[k]
+                self.imatge = TVISOIMGURL + "/ES" + IMG['posterL'] + kargs[k]
+
+    def info(self):
+        return {'idm' : str(self.idm),
+               'imdb' : str(self.imdb),
+               'name' : self.name,
+               'year' : str(self.year),
+               'plot' : self.plot,
+               'mediaType' : str(self.tipus),
+               'imatge' : self.imatge}
+
 
 
 
@@ -132,6 +145,7 @@ IMG =  {'fonsL': '/backdrop/w600',
         'posterS': '/poster/w50'}
 PAIS = ('ES', 'XX')
 TVISOURL = 'https://api.tviso.com'
+TVISOIMGURL = 'https://img.tviso.com'
 API_ID = '3452'
 SECRET="t33eHYzzay9np3nugyzv"
 
@@ -145,8 +159,11 @@ TVISO_PASS = ''
 # ############################################
 # Proves
 # ############################################
-m = Media(image = '/4b/e5/4be5694e73e65e2ef2ddc746240f4de2.jpg')
-print(m.imatge)
+#
+
+# m = Media(**t)
+# print(m.any)
+# print(m.info())
 # print([dir[0] for dir in localmedia('dir_pelis')])
 
 # filtra_torrents(tipus = 1, nom = 'la cosa nstrasS20E34')
