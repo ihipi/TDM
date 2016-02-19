@@ -31,14 +31,16 @@ class TViso:
         self.auth_token = tools.getconfig()['auth_token']
         self.auth_expires = tools.getconfig()['auth_expires_date']
         self.user_token = tools.getconfig()['user_token']
+        print(int(self.actualTime) , self.auth_expires)
 
         if int(time.time()) > int(tools.getconfig()['auth_expires_date']):
-            print(int(self.actualTime) , self.auth_expires)
 
-
-            print('actualitzant tokens...')
-            self.getAuthToken()
-            self.getUserToken()
+            try:
+                print('actualitzant tokens...')
+                self.getAuthToken()
+                self.getUserToken()
+            except Exception as e:
+                print(e)
         if 'usuari' not in tools.getconfig().keys():
             pass
 
@@ -97,6 +99,12 @@ class TViso:
                 print("Hi ha hagut un problema: {}".format(respj))
                 return False, None
 
+    def getuid(self):
+        gets={'auth_token':self.auth_token,'user_token':self.user_token}
+        req = requests.get('https://api.tviso.com/user/me?', params = gets).json()
+        # tools.setconfig(uid = req['results']['uid'])
+        print
+        return req['result']['uid']
 
     def searchTitle(self, title):
         """
@@ -175,22 +183,59 @@ class TViso:
         Busca un resum de tot el que tens vist i seguint al tviso
         :return: json amb un resum( inclos capitols vistos i les dates)
         """
+
         gets={'auth_token':self.auth_token,'user_token':self.user_token}
-        return requests.get(TVISOURL+'/user/media/collection_summary?', params = gets).json()
+        req = requests.get(TVISOURL+'/user/media/collection_summary?', params = gets).json()
+        print(req)
+        return req
+
+    def llistatviso(self):
+        gets = {'auth_token':self.auth_token,'user_token':self.user_token,}
+        llistes =  requests.post('https://api.tviso.com/user/media/lists?auth_token={auth_token}&user_token={user_token}', gets).json()['own']
+        print(llistes)
+        for ll in llistes:
+            if ll['title'] == 'TDManta':
+                return ll
+        return {}
+
+    def addMedia(self, idm, mediaType):
+        llista = self.llistatviso()
+        print(llista)
+        try:
+
+            tdmlistid = llista['id']
+            # posts = (self.auth_token, self.user_token, tdmlistid, idm, mediaType)
+            # res = requests.post('https://api.tviso.com/media/list/add_media?auth_token={}&user_token={}&id={}&idm={}&mediaType={}'.format(self.auth_token, self.user_token, tdmlistid, idm, mediaType)).json()
+            posts = {'auth_token' :self.auth_token,'user_token': self.user_token,'id' : tdmlistid,'idm': idm,'mediaType': mediaType}
+            res = requests.post('https://api.tviso.com/media/list/add_media?',posts ).json()
+            print('resultat: ' , res)
+            if res['error'] == 0:
+                return True
+            else:
+                print('adding...',res['errorMessage'])
+        except Exception as e:
+            print('Escept' ,e)
+
+
+
 
 # tv = TViso()
+# print(tv.addMedia(69,1))
+# al = tv.getUserSumary()
+# print(al)
+# for k in al:
+#     print("{}:".format(k.info()))
+#
+# print(al)
+
 # al=tv.getAllMediaList()
 # tv.getUserToken()
 # print(tv.getUserSumary())
-# al = tv.searchTitle('fargo')
 #pprint(Tv.getUserCollection().json(),depth = 5)
 #pprint(Tv.getUserMedia().json(),depth = 5)
 #
 # full = tv.getFullInfo(2078,1)
 
-
-# for k in al:
-#     print("{}:".format(k.info()))
 
 
 # full = tv.getUserSumary()
@@ -201,3 +246,4 @@ class TViso:
 #             print("\t{}:\n\t{}".format(kk,full[k][kk]))
 
 # pprint(Tv.getUserSumary(),depth =4)
+

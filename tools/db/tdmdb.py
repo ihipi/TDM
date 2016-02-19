@@ -34,34 +34,29 @@ class TDMDB():
         self.db = sqlite3.connect(DB)
         self.c = self.db.cursor()
 
-        self.c.execute('CREATE TABLE IF NOT EXISTS '
-                       'series ('
-                       'imdb INTEGER PRIMARY KEY not NULL,'
-                       'tvmazeID INTEGER, '
-                       'name TEXT, '
-                       'image TEXT, '
-                       'rating TEXT, '
-                       'sinopsis TEXT)')
+
         self.c.execute('CREATE TABLE IF NOT EXISTS '
                        'mycollection ('
-                       'imdb INTEGER PRIMARY KEY not NULL,'
-                       'tviso_id INTEGER, '
+                       'idm INTEGER PRIMARY KEY not NULL,'
+                       'imdb INTEGER, '
                        'media INTEGER, '
                        'name TEXT, '
+                       'year TEXT,'
                        'plot TEXT, '
                        'estat TEXT, '
-                       'imatge TEXT, seasons INTEGER )')
+                       'imatge TEXT,'
+                       ' seasons INTEGER)')
         self.c.execute('create table if not exists '
                        'capitols ('
-                       'idm INTEGER PRIMARY KEY not NULL, '
-                       'tviso_id INTEGER, '
+                       'idmcapitol INTEGER PRIMARY KEY not NULL, '
+                       'idm INTEGER, '
                        'season INTEGER, '
-                       'capitol INTEGER, '
-                       'titol TEXT, '
-                       'sinopsis TEXT,'
+                       'num INTEGER, '
+                       'name TEXT, '
+                       'plot TEXT, '
                        'estat INTEGER , '
-                       'date TEXT)')
-        self.lastId = self.getLastID()
+                       'released TEXT)')
+
         self.format = '%Y-%M-%d'
         ###
         ###Implementing multiples threads
@@ -79,17 +74,19 @@ class TDMDB():
         ### COMPROVAR ULTIMA ACTUALITZACIó
         ###
         self.lastUpdate = self.gettime()
-        deltaTime = datetime.strptime(time.strftime(self.format),self.format)-datetime.strptime(self.lastUpdate , self.format)
         # print("La ultima actualitzacio: {}\nFrequencia d'actualitzacio: {}"(self.lastUpdate,str(tools.getconfig()['actualitzacio_freq'])))
+        deltaTime = datetime.strptime(time.strftime(self.format),self.format)-datetime.strptime(self.lastUpdate , self.format)
         if deltaTime.days>=tools.getconfig()['actualitzacio_freq']:
             print("Fa {} dies de la ultima actualitzacio de la DB".format(deltaTime.days))
-            self.updateUserMedia()
+            upd = multiprocessing.Process(target=self.updateUserMedia, name='UpdateUser')
+            upd.start()
+            # self.updateUserMedia()
         else:
             print('-'*50,'\nBase de dades actualitzada a dia: {}\n'.format(self.lastUpdate),'-'*50)
 
     def settime(self):
 #         f = open(self.root+'confb', mode='w')
-        last = {'lastUpdate':time.strftime(self.format)}
+#         last = {'lastUpdate':time.strftime(self.format)}
 #         j = json.dump(last, f )
 #         f.close()
         tools.setconfig(lastUpdate = time.strftime(self.format))
@@ -115,20 +112,8 @@ class TDMDB():
         # self.dbstop()
         return response
 
-    # TODO canviar per un query que retorni la id mes alta
-    def getLastID(self):
-
-        self.c.execute('select * from series')
-        lastId = 0
-        for row in self.c:
-            if row[0]>lastId:
-                lastId = row[0]
-        print('Last TVMaze id: ',lastId)
-        return lastId
-
     def gettime(self):
 
-        print(tools.getconfig()['lastUpdate'])
         return tools.getconfig()['lastUpdate']
 
     def wgetImage(self, *args):
@@ -167,6 +152,7 @@ class TDMDB():
                         print('descarregant poster i back per la serie {}'.format(serie))
                         os.system("wget -O {0} {1}".format(posterFile, posterurl))
                         os.system("wget -O {0} {1}".format(backdropFile, backurl))
+                        self.__dbquery('UPDATE mycollection ')
                         if fil != None:
                             cua.task_done()
                         else:
@@ -212,6 +198,7 @@ class TDMDB():
                 else:
                     sortida = True
 
+
     def addSerie(self, idm, media_type):
 
         tviso =  TViso()
@@ -228,17 +215,25 @@ class TDMDB():
                 for k in res['seasons'].keys():
                     if int(k) > seasons:
                         seasons = int(k)
-            values = (int(res['imdb'][2:]),     # 1 imdb
-                      int(res['idm']),          # 2 idm
+            # TODO arreglar valors passats a la base de dades (9)
+            # idm,imdb,media,name,year,plot,estat,imatge,seasons
+            values = (int(res['idm'])           # 1 idm
+                      ,int(res['imdb'][2:]),    # 2 imdb
                       int(res['mediaType']),    # 3 media
                       str(res['name']),         # 4 name
-                      str(res['plot']),
-                      str(res['status']),       # 5 estat
-                      imageFile,                # 6 imatge
-                      seasons)                  # 7 seasons
-            self.c.execute("INSERT OR REPLACE into mycollection values (?,?,?,?,?,?,?,?)",values)
+                      str(res['year']),         # 5 any
+                      str(res['plot']),         # 6 sinopsi
+                      str(res['status']),       # 7 estat
+                      imageFile,                # 8 imatge
+                      seasons)                  # 9 seasons
+            ordre = "INSERT OR REPLACE into mycollection values (" +  ",".join('?'*len(values)) + ")"
+            print(ordre)
+            # self.dbstart()
+            self.c.execute(ordre, values)
             self.db.commit()
+            # self.dbstop()
             print("{}({}) s'ha afegit correctament".format(res['name'], res['idm']))
+
 
         except Exception as e:
 
@@ -252,18 +247,24 @@ class TDMDB():
             for season in res['seasons'].keys():
                 for e in res['seasons'][str(season)]:
                     estat =0
-                    values = (int(e['idm']),int(e['media']['idm']),
-                              int(e['season']), int(e['num']),
+                    # TODO arreglar per a la nova db
+                    # idmcapitol, idm, season, num, name, plot, estat, released
+                    values = (int(e['idm']),
+                              int(e['media']['idm']),
+                              int(e['season']),
+                              int(e['num']),
                               str(e['name']),
                               str(e['plot']),
                               estat,
-                              '')
+                              "")
 
                     print('-'*60)
-                    ordre = """INSERT OR replace into capitols values (?,?,?,?,?,?,?,?) """
+                    ordre = """INSERT OR replace into capitols values ("""  +  ",".join('?'*len(values)) + ")"
                     try:
+                        # self.dbstart()
                         self.c.execute(ordre,values)
                         self.db.commit()
+                        # self.dbstop()
 
                     except sqlite3.IntegrityError:
                         print("couldn't add episode twice")
@@ -273,6 +274,7 @@ class TDMDB():
     def updateUserMedia(self):
         tviso = TViso()
         res = tviso.getUserSumary()
+        print('res',res)
         image_dict = dict()
         #busquem totes les imatges que tenim guardades
         for file in os.listdir(ROOTDB+'/imatges/'):
@@ -294,10 +296,15 @@ class TDMDB():
         img_file.close()
         image_file = open(ROOTDB+'/imatges/imatges_dict', mode='r+')
         images = json.load(image_file)
+        items_llista = []
+        # print(tviso.llistatviso()['last_medias'])
+        for m in tviso.llistatviso()['last_medias']:
+            items_llista.append(m['name'])
         for media in res['collection']['medias'].keys():
             tipus, idm = media.split('-')
             idms = images.keys()
-            dbexist = self.__dbquery('SELECT * FROM mycollection WHERE tviso_id= ?', idm)
+            dbexist = self.__dbquery('SELECT name FROM mycollection WHERE idm= ?', idm)
+            self.db.commit()
             print('query de la serie a mycollection', dbexist)
             if str(idm) not in idms:
                 print(idm, idms)
@@ -305,20 +312,20 @@ class TDMDB():
                 self.wgetImage(idm, tipus)
                 # per fer servir la cua de descarregues
                 # self.get_image_queue.put((idm,tipus))
+            print('dbexist: ',dbexist)
             if dbexist == []:
                 self.addSerie(idm, tipus)
+            # TODO : Comprovar que si esta a la llista
+            elif dbexist[0] not in items_llista:
+                tviso.addMedia(idm, tipus)
         self.get_image_queue.join()
 
 #            self.wgetImage(media.split('-')[1],media.split('-')[0])
         for episodi in res['collection']['episodes'].keys():
-            data = datetime.fromtimestamp(res['collection']['episodes'][episodi]).strftime('%Y-%m-%d')
+            data = datetime.fromtimestamp(res['collection']['episodes'][episodi]).strftime(self.format)
             print(data, episodi)
-            self.c.execute("""UPDATE capitols SET date=? WHERE idm=?""", (str(data), int(episodi)))
+            self.c.execute("""UPDATE capitols SET released=? WHERE idm=?""", (str(data), int(episodi)))
             self.db.commit()
-
-
-
-
 
         self.settime()
 
@@ -381,6 +388,7 @@ class TDMDB():
                     print(ordre)
                     try:
                         self.c.execute(ordre,row)
+                        self.db.commit()
 
                     except sqlite3.IntegrityError:
                         print('"could not add "'+row[2]+'" twice')
@@ -409,7 +417,7 @@ class TDMDB():
             for t in tipus[0]:
                 print(t)
                 tip+=str(t) + ","
-            print(tip)
+            # print(tip)
             ordretipus= "media IN (" + tip[:-1] + ")"
 
         if ordrefiltre:
@@ -422,10 +430,21 @@ class TDMDB():
 
         print(ordre)
         self.c.execute(ordre)
+        self.db.commit()
         llista = []
         for row in self.c:
-            llista.append(tools.Media(**{'imdb' : row[0],'idm' : row[1],'mediaType' : row[2],'name' : row[3],'plot' : row[4],'estat' : row[5],'seasons' : row[6]}))
-        print(llista)
+            m =tools.Media(**{'idm' : row[0],
+                              'imdb' : row[1],
+                              'mediaType' : row[2],
+                              'name' : row[3],
+                              'year' : row[4],
+                              'plot' : row[5],
+                              'estat' : row[6],
+                              'imatge' : row[7],
+                              'seasons' : row[8]})
+            # print(m.info())
+            llista.append(m)
+            # print(llista, self.c)
 
         return llista
 
@@ -435,12 +454,15 @@ class TDMDB():
         """
         return self.__dbquery('SELECT * FROM mycollection WHERE idm=?',(idm,))
 
-    def getEpisodes(self,tviso_id):
-        num_temp = self.c.execute('SELECT max(season) FROM capitols WHERE tviso_id=?',(tviso_id,))
+    def getEpisodes(self, idm):
+        num_temp = self.c.execute('SELECT seasons FROM mycollection WHERE idm=?',(idm,))
+
         print('NUMERO DE TEMPORADES: ')
         episodis = dict()
         for season in range(num_temp.fetchone()[0]):
-            res = self.c.execute('SELECT * FROM capitols WHERE tviso_id=? AND season = ?' , (tviso_id,season))
+            self.db.commit()
+            res = self.c.execute('SELECT * FROM capitols WHERE idm=? AND season = ?' , (idm, season))
+            self.db.commit()
             episodis[season]=[row for row in res]
         return episodis
 

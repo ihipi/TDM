@@ -1,4 +1,7 @@
 from tdm import gui
-if __name__ == '__main__':
+import multiprocessing
 
-    p = gui.start()
+if __name__ == '__main__':
+    m = multiprocessing.Process(target=gui.start, name= 'principal')
+    m.start()
+    m.join()

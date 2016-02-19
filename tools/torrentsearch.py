@@ -1,5 +1,5 @@
 import requests
-from tools import get_bs
+from tools import get_bs, Torrent
 
 
 
@@ -92,6 +92,7 @@ class DivixTotal(object):
 #         print(soup.prettify())
         #recull els resultats de la busqueda i els itera
         torrents = {}
+        torList = []
         print('divixtotal:', serie)
         for p in soup.find_all('p', attrs={'class':'seccontnom'}):
 
@@ -102,14 +103,18 @@ class DivixTotal(object):
 
 
                     for capitol in seriebs.find_all('td', attrs={"class":'capitulonombre'}):
+                        t = Torrent(name = str(capitol.a.text),url = self.url+capitol.a.get('href'))
+                        torList.append(t)
                         torrents[str(capitol.a.text)] = self.url+capitol.a.get('href')
                         print(capitol.a.text, '\t'+ self.url+capitol.a.get('href'))
                 return torrents
             else:
+                t = Torrent(name = str(p.a.text),url = self.url+p.a.get('href'))
+                torList.append(t)
                 torrents[str(p.a.text)] = ''+self.url+p.a.get('href')
             #print(p.a.get('title'),'\t\t',''+self.url+p.a.get('href'))
         print(torrents)
-        return torrents
+        return torrents, torList
 
     # TODO arreglar la busqueda per series de divixtotal
     def llistaSeries(self, inicial=None):

@@ -4,9 +4,9 @@ import sys, os
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QBrush
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTreeWidgetItem, QFileDialog, QSplitter, QHBoxLayout, QFrame
+from PyQt5.QtWidgets import QApplication, QMessageBox, QMainWindow, QTreeWidgetItem, QFileDialog, QSplitter, QHBoxLayout, QFrame
 
-from tools import torrentsearch, GUI, setconfig,getconfig, MEDIATYPE, ROOTDB, transmision as tr, tviso as tv
+from tools import torrentsearch, GUI, setconfig,getconfig, MEDIATYPE, ROOTDB, transmision as tr, tviso as tv, SERIESTATE,PELISTATE
 import tools
 from tdm.dialegs import TVisoLogin, TransmissionConf
 # from tools.torrentsearch import  BUSCADORS
@@ -29,7 +29,7 @@ class Ventana(QMainWindow):
         self.db = TDMDB()
         print(TDMDB)
         self.tv = tv.TViso()
-        self.tabs = []
+        self.tabs_ = []
         for motor in torrentsearch.BUSCADORS.keys():
             self.comboMotors.addItem(motor)
         self.index =0
@@ -59,6 +59,9 @@ class Ventana(QMainWindow):
         self.btn_dirPelis.clicked.connect(lambda: self.setmediadirectory(2))
         self.btn_tviso.clicked.connect(self.callTvisoLogin)
         self.btn_transmission.clicked.connect(self.callTransmissionConf)
+        self.conf_radio_series.toggled.connect(self._pobla_folders)
+        self.conf_radio_pelis.toggled.connect(self._pobla_folders)
+
 
         ###########################################################
         ###            PESTANYA TORRENTS                      #####
@@ -92,10 +95,10 @@ class Ventana(QMainWindow):
         #global\Local
         self.radioLocal.toggled.connect(self.get_items)
         self.radioGlobal.toggled.connect(self.get_items)
-        self.cb_1.toggled.connect(self.get_items)
-        self.cb_2.toggled.connect(self.get_items)
-        self.cb_3.toggled.connect(self.get_items)
-        self.cb_4.toggled.connect(self.get_items)
+        self.cb_1.toggled.connect(self.feed_list)
+        self.cb_2.toggled.connect(self.feed_list)
+        self.cb_3.toggled.connect(self.feed_list)
+        self.cb_4.toggled.connect(self.feed_list)
         #afegir borrar series de la llista
         #   add        lambda: self.db.addSerie(self.listShows.currentItem().text(0))
         #   delete     lambda: self.db.deleteSerie(self.listShows.currentItem().text(0))
@@ -113,14 +116,16 @@ class Ventana(QMainWindow):
         self.radioLocal.setChecked(True)
         # busca a tviso
         self.btn_busca_media.clicked.connect(lambda: self.get_search(self.line_busca_media.text()))
+        # busca un torrent
+        self.search_torrent.clicked.connect(lambda: self.getTorrent(self.listShows.currentItem()))
 
-#     def closeEvent(self, event):
-#         resultat = QMessageBox.question(self,"sortir...","Vols sortir de l'aplicacio?",QMessageBox.Yes | QMessageBox.No)
-#         if resultat == QMessageBox.Yes:
-#             self.db.dbstop()
-#             event.accept()
-#         else: event.ignore()
-#
+    def closeEvent(self, event):
+        resultat = QMessageBox.question(self,"sortir...","Vols sortir de l'aplicacio?",QMessageBox.Yes | QMessageBox.No)
+        if resultat == QMessageBox.Yes:
+            self.db.dbstop()
+            event.accept()
+        else: event.ignore()
+
         ###########################################################
         #                        CONFIGURACIO                     #
         ###########################################################
@@ -134,14 +139,10 @@ class Ventana(QMainWindow):
         self.dialog_03.show()
         self.dialog_03.raise_()
 
-        ###########################################################
-        #                        TORRENTS                         #
-        ###########################################################
-
-    def download(self, item):
-        # TODO agafar un torrent i passarlo al transmission
-        print(item.text(1))
-        tr.addtorrent(item.text(1))
+    def _pobla_folders(self):
+        if self.conf_radio_series.toggled:
+            for f in tools.localmedia('dir_series'):
+                self.treeFolder.insertTopLevelItems(0, [QTreeWidgetItem(self.listShows, f)])
 
     def setmediadirectory(self, tipus):
         media_dir = None
@@ -152,35 +153,47 @@ class Ventana(QMainWindow):
         fileName = QFileDialog.getExistingDirectory(self, 'Dialog Title')
         if fileName:
             print(fileName)
+
             if tipus == 1:
                 self.line_series.setText(fileName)
                 setconfig(dir_series = fileName)
                 print(tools.localmedia(media_dir))
+
             elif tipus == 2:
                 self.line_pelis.setText(fileName)
                 setconfig(dir_pelis = fileName)
                 print(tools.localmedia(media_dir))
 
-    def poblaListShow(self,*tipus):
-        print(tipus)
-        for row in self.media_temp:
+        ###########################################################
+        #                        TORRENTS                         #
+        ###########################################################
 
+    def download(self, item):
+        # TODO agafar un torrent i passarlo al transmission
+        print(item.text(1))
+        tr.addtorrent(item.text(1))
+
+    def poblaListShow(self,):
+        self.listShows.clear()
+        tipus = [(1,self.cb_1.isChecked()),(2,self.cb_2.isChecked()),(3,self.cb_3.isChecked()),(4,self.cb_4.isChecked())]
+        tip_checked = [tip[0] for tip in tipus if tip[1] !=False]
+        for row in self.media_temp:
+            fila = [str(row.idm),'{} '.format(row.name), str(row.tipus)]
             # afegim item
             # Seleccio deltreeWidget afegir a dalt(columna,[objecte])
-            if len(tipus) > 0:
-                print(row.tipus)
-                if row.tipus in tipus:
-                    fila = [str(row.idm),row.name, str(row.tipus)]
+            if len(tip_checked) > 0:
+                if int(fila[-1]) in tip_checked:
                     self.listShows.insertTopLevelItems(0, [QTreeWidgetItem(self.listShows, fila)])
             else:
-                print('else:',row.name)
-                fila = [str(row.idm),row.name, str(row.tipus)]
                 self.listShows.insertTopLevelItems(0, [QTreeWidgetItem(self.listShows, fila)])
 
-    def buscaEvent(self):
+    def buscaEvent(self, motor=None, paraula=None,divixserie=None):
 #         busqueda = DivixTotal().busca(str(self.text_busqueda.text()),self.check_series.isChecked())
+        m = motor or self.comboMotors.currentText()
+        p = paraula or str(self.text_busqueda.text())
+        s = divixserie or self.check_series.isChecked()
 
-        busqueda = torrentsearch.busca(motor=self.comboMotors.currentText(), paraula=str(self.text_busqueda.text()), divixserie=self.check_series.isChecked())
+        busqueda = torrentsearch.busca(motor= m, paraula=p, divixserie=s)
         print(self.comboMotors.currentText(), self.text_busqueda.text(), self.check_series.isChecked())
         #busqueda = DivixTotal().busca('fargo',True)
         self.treeResultat.clear()
@@ -225,6 +238,12 @@ class Ventana(QMainWindow):
         self.db.addSerie(num, None)
         print(num)
 
+    def feed_list(self):
+        if self.radioLocal.isChecked():
+            self.get_items()
+        elif self.radioGlobal.isChecked():
+            self.poblaListShow()
+
     def get_items(self, filtra=''):
         """
         Busca i mostra series a la llista lateral
@@ -242,7 +261,6 @@ class Ventana(QMainWindow):
             #  Iterem per poblar||
             # --------- crida base dades --- (GLOB/LOC,TEXT)
             tipus = [(1,self.cb_1.isChecked()),(2,self.cb_2.isChecked()),(3,self.cb_3.isChecked()),(4,self.cb_4.isChecked())]
-            print([tip[0] for tip in tipus if tip[1] !=False])
             self.media_temp = self.db.getCollectionList(table, filtra, [tip[0] for tip in tipus if tip[1] !=False])
             self.poblaListShow()
 #             print(row)
@@ -252,9 +270,8 @@ class Ventana(QMainWindow):
         self.listShows.clear()
         self.media_temp = self.tv.searchTitle(text)
         rows = []
-        tipus = [(1,self.cb_1.isChecked()),(2,self.cb_2.isChecked()),(3,self.cb_3.isChecked()),(4,self.cb_4.isChecked())]
-        print([tip[0] for tip in tipus if tip[1] !=False])
-        self.poblaListShow([tip[0] for tip in tipus if tip[1] !=False])
+
+        self.poblaListShow()
 
     def set_image(self, idm, tipus = None):
         """
@@ -292,39 +309,31 @@ class Ventana(QMainWindow):
         Emplena el quadre de Informacio
         @param item: linia de la llista lateral
         """
-        local = self.radioLocal.isChecked()
-        if local:
-            print(item.text(0))
 
-            tviso_id = item.text(0)
-            # info =self.db.getShowId(tvmaID)[0]
-            self.db.c.execute('SELECT tviso_id, media,seasons, imatge, plot, name FROM mycollection WHERE tviso_id=?', (item.text(0), ))
-            idm,media, seasons, imatge , plot, name = self.db.c.fetchone()
-            print('local:\n', idm,media, seasons, imatge , plot, name)
-#             self.labelTitol.setText(info[0][2])
-#             self.labelRating.setText(info[0][4])
-#             self.setImage(info[0][3])
-#             self.setSinopsy(info[0][5])
-#             self.addEpisodis(tvmaID)
-        else:
-            tviso_id = item.text(0)
-            info =self.db.getCollectionShowId(tviso_id)[0]
-            # self.db.c.execute('SELECT * FROM myseries WHERE tvmazeID=?',[item.text(0),])
-            # info =[row for  row in self.db.c]
-            print('Global:\n', info)
+        for media in self.media_temp:
+             if int(media.idm) == int(item.text(0)):
+                print('OK! ','item seleccionat: ', item.text(1), item.text(2))
+                self.labelTitol.setText(media.name)
+                self.set_image(item.text(0), str(media.tipus))
+                self.setSinopsy(media.plot)
+                print()
+                if item.text(2) == '1':
+                    self.labelRating.setText(SERIESTATE[str(media.estat)])
 
-        self.labelTitol.setText(name)
-        self.labelRating.setText(str(seasons))
-        self.set_image(item.text(0), str(media))
-        self.setSinopsy(plot)
-        print('item seleccionat: ', item.text(1), item.text(2))
-        if item.text(2) == '1':
-            self.addEpisodis(tviso_id)
+                    self.extrainfo.hide()
+                    self.treeEpisodis.show()
+                    self.addEpisodis(media.idm)
+                else:
+                    self.labelRating.setText(PELISTATE[str(media.estat)])
+                    self.extrainfo.show()
+                    self.treeEpisodis.hide()
+
 
     def set_episodi_info(self, item):
         try:
             print([item.text(0),item.text(1),item.text(2)])
             self.db.c.execute('SELECT sinopsis, titol FROM capitols WHERE titol=?', (item.text(2),))
+            self.db.commit()
             sin, tit = self.db.c.fetchone()
             self.setSinopsy(sin)
             self.labelTitol.setText(tit)
@@ -375,6 +384,7 @@ class Ventana(QMainWindow):
                 self.db.c.execute('UPDATE capitols SET estat=? WHERE titol=?', (1, item.text(2)))
                 self.db.db.commit()
                 self.db.c.execute('SELECT estat FROM capitols WHERE titol=?', (item.text(2), ))
+                self.db.db.commit()
                 print('ESTAT:',self.db.c.fetchone())
 
                 print("checked", item, item.text(2))
@@ -383,10 +393,19 @@ class Ventana(QMainWindow):
                 self.db.c.execute('UPDATE capitols SET estat=? WHERE titol=?', (0,item.text(2)))
                 self.db.db.commit()
                 self.db.c.execute('SELECT estat FROM capitols WHERE titol=?', (item.text(2),))
+                self.db.db.commit()
                 print('ESTAT:', self.db.c.fetchone()[-1])
                 print("unchecked", item, item.text(2))
         except Exception as e:
             print('seleccio capitol fallada : {}'.format(e))
+
+    def getTorrent(self, item):
+        self.tabs.setCurrentIndex(1)
+        idm, name, tipus = item.text(0),item.text(1),int(item.text(2))
+        if tipus > 1:
+            self.buscaEvent('divixtotal',name, False)
+        else:
+            self.buscaEvent('divixtotal',name,divixserie=True )
 
 def start():
     #Instancia para iniciar una aplicación

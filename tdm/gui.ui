@@ -19,7 +19,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="1">
-     <widget class="QTabWidget" name="conf">
+     <widget class="QTabWidget" name="tabs">
       <property name="enabled">
        <bool>true</bool>
       </property>
@@ -36,9 +36,9 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
-      <widget class="QWidget" name="tab_2">
+      <widget class="QWidget" name="tab_media">
        <attribute name="title">
         <string>My Media</string>
        </attribute>
@@ -205,7 +205,7 @@
                  <enum>QFrame::Raised</enum>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_12">
-                 <item row="0" column="0">
+                 <item row="1" column="0">
                   <widget class="QTreeWidget" name="treeEpisodis">
                    <property name="minimumSize">
                     <size>
@@ -239,6 +239,13 @@
                    </column>
                   </widget>
                  </item>
+                 <item row="0" column="0">
+                  <widget class="QGroupBox" name="extrainfo">
+                   <property name="title">
+                    <string>Info</string>
+                   </property>
+                  </widget>
+                 </item>
                 </layout>
                </widget>
               </item>
@@ -259,8 +266,8 @@
                    <property name="frameShadow">
                     <enum>QFrame::Raised</enum>
                    </property>
-                   <layout class="QGridLayout" name="gridLayout_13">
-                    <item row="0" column="0">
+                   <layout class="QVBoxLayout" name="verticalLayout_5">
+                    <item>
                      <widget class="QLabel" name="labelTitol">
                       <property name="maximumSize">
                        <size>
@@ -278,7 +285,7 @@
                       </property>
                      </widget>
                     </item>
-                    <item row="1" column="0">
+                    <item>
                      <widget class="QLabel" name="labelEpisodi">
                       <property name="maximumSize">
                        <size>
@@ -296,14 +303,7 @@
                       </property>
                      </widget>
                     </item>
-                    <item row="3" column="0">
-                     <widget class="QLabel" name="labelRating">
-                      <property name="text">
-                       <string/>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="0">
+                    <item>
                      <widget class="QTextBrowser" name="labelSinopsi">
                       <property name="minimumSize">
                        <size>
@@ -317,6 +317,26 @@
                         <height>16777215</height>
                        </size>
                       </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QWidget" name="widget" native="true">
+                      <layout class="QHBoxLayout" name="horizontalLayout_10">
+                       <item>
+                        <widget class="QLabel" name="labelRating">
+                         <property name="text">
+                          <string/>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="search_torrent">
+                         <property name="text">
+                          <string>buscar</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
                      </widget>
                     </item>
                    </layout>
@@ -483,7 +503,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab">
+      <widget class="QWidget" name="tab_torrent">
        <attribute name="title">
         <string>Torrents</string>
        </attribute>
@@ -627,7 +647,7 @@
              <property name="rowSpan" stdset="0">
               <number>3</number>
              </property>
-             <layout class="QGridLayout" name="gridLayout_9" rowstretch="0,0">
+             <layout class="QGridLayout" name="gridLayout_9" rowstretch="0">
               <item row="0" column="0">
                <widget class="QCheckBox" name="check_series">
                 <property name="text">
@@ -726,15 +746,83 @@
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_5">
            <item>
+            <widget class="QGroupBox" name="groupBox_5">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>200</height>
+              </size>
+             </property>
+             <property name="title">
+              <string>Carpetes</string>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_18">
+              <item row="1" column="0">
+               <widget class="QLineEdit" name="line_series"/>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLineEdit" name="line_pelis"/>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_5">
+                <property name="text">
+                 <string>Series</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_6">
+                <property name="text">
+                 <string>Pel·licules</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QToolButton" name="btn_dirSeries">
+                <property name="maximumSize">
+                 <size>
+                  <width>30</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>...</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QToolButton" name="btn_dirPelis">
+                <property name="maximumSize">
+                 <size>
+                  <width>30</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>...</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="Line" name="line_4">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QGroupBox" name="groupBox_8">
              <property name="title">
-              <string>GroupBox</string>
+              <string>Comptes</string>
              </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_9">
+             <layout class="QVBoxLayout" name="verticalLayout_4">
               <item>
-               <widget class="QPushButton" name="btn_password">
+               <widget class="QPushButton" name="btn_transmission">
                 <property name="text">
-                 <string>contrasenya general</string>
+                 <string>Transmision</string>
                 </property>
                </widget>
               </item>
@@ -749,9 +837,9 @@
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="btn_transmission">
+               <widget class="QPushButton" name="btn_password">
                 <property name="text">
-                 <string>Transmision</string>
+                 <string>contrasenya general</string>
                 </property>
                </widget>
               </item>
@@ -762,69 +850,7 @@
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_4">
-          <item>
-           <widget class="QGroupBox" name="groupBox_5">
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>200</height>
-             </size>
-            </property>
-            <property name="title">
-             <string>Carpetes</string>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_18">
-             <item row="1" column="0">
-              <widget class="QLineEdit" name="line_series"/>
-             </item>
-             <item row="3" column="0">
-              <widget class="QLineEdit" name="line_pelis"/>
-             </item>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_5">
-               <property name="text">
-                <string>Series</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_6">
-               <property name="text">
-                <string>Pel·licules</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QToolButton" name="btn_dirSeries">
-               <property name="maximumSize">
-                <size>
-                 <width>30</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>...</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <widget class="QToolButton" name="btn_dirPelis">
-               <property name="maximumSize">
-                <size>
-                 <width>30</width>
-                 <height>16777215</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>...</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-         </layout>
+         <layout class="QHBoxLayout" name="horizontalLayout_4"/>
         </item>
         <item>
          <widget class="QGroupBox" name="groupBox_6">
@@ -877,16 +903,27 @@
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_3">
               <item>
-               <widget class="QTreeWidget" name="treeWidget">
+               <widget class="QTreeWidget" name="treeFolder">
                 <property name="maximumSize">
                  <size>
                   <width>400</width>
                   <height>16777215</height>
                  </size>
                 </property>
+                <property name="sortingEnabled">
+                 <bool>true</bool>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
                 <column>
                  <property name="text">
-                  <string notr="true">1</string>
+                  <string notr="true">nom</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>carpeta</string>
                  </property>
                 </column>
                </widget>
@@ -1020,6 +1057,38 @@
     <hint type="destinationlabel">
      <x>687</x>
      <y>665</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioGlobal</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>extrainfo</receiver>
+   <slot>show()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>849</x>
+     <y>160</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>704</x>
+     <y>592</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioLocal</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>extrainfo</receiver>
+   <slot>hide()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>629</x>
+     <y>160</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>704</x>
+     <y>592</y>
     </hint>
    </hints>
   </connection>
