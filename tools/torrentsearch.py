@@ -4,18 +4,22 @@ from tools import get_bs, Torrent
 
 
 
-def busca(motor, paraula, divixserie = False):
-    print('torrentsearch:',motor,paraula, divixserie)
+def busca(motor, paraula, **Kargs):
+    print('torrentsearch:',motor,paraula, Kargs)
     motorB = BUSCADORS[motor]
 
     if motor == 'divixtotal':
-        return motorB.busca(paraula,divixserie)
+        return motorB.busca(paraula,Kargs['divixserie'])
     elif motor == 'elitetorrent':
         return motorB.busca(paraula)
-    elif motor == 'kickass':
-        pass
-
-
+    elif motor == 'kickass' or motor == None:
+        if isinstance(Kargs['imdb'],int):
+            paraula =str(Kargs['imdb'])
+        print(paraula,Kargs)
+        res = motorB.busca(paraula,Kargs['imdb'],True)
+        if res == []:
+            res =motorB.busca(paraula,Kargs['imdb'])
+        return res
 class Eliterorrent():
     def __init__(self):
 
@@ -52,7 +56,7 @@ class Eliterorrent():
         soup = get_bs(url)
         links = soup.find('div', attrs={'class':'enlace_descarga'})
         descarga =[]
-        print(links)
+        # print(links)
         try:
             for a in links.find_all('a'):
 
@@ -60,13 +64,12 @@ class Eliterorrent():
                     descarga.append(self.url+a.get('href'))
                 else:
                     descarga.append(a.get('href'))
-        except Exception == 'NoneType':
-            print('sense resposta')
+
         except Exception as e:
             print("error: {}\n Al aconseguir els links de elitetorrent".format(e))
         return descarga
 
-class DivixTotal(object):
+class DivixTotal():
     """
     DIVIXTOTAL
     """
@@ -147,10 +150,79 @@ class DivixTotal(object):
                 else:
                     print(a.get('title'),'\t\t\t',''+self.url+a.get( 'href'))
 
+class KickAss():
+    def __init__(self, domain='kat.cr'):
+        self.domain = domain
+
+        self.url= {  'BASE' : "http://"+domain,
+                    'SEARCH' : "http://"+domain+"/usearch/",
+                    'LATEST' : "http://"+domain+"/new/",
+                    'USER' : "http://"+domain+"/user/"}
+        self.categories = {'MOVIES' : "movies",
+                    'TV' : "tv",
+                    'MUSIC' : "music",
+                    'BOOKS' : "books",
+                    'GAMES' : "games",
+                    'APPLICATIONS' : "applications",
+                    'XXX' : "xxx"}
+        self.order = {'SIZE' : "size",
+                'FILES_COUNT' : "files_count",
+                'AGE' : "time_add",
+                'SEED' : "seeders",
+                'LEECH' : "leechers",
+                'ASC' : "asc",
+                'DESC' : "desc"}
+
+    def makeurl(self,query,imdb,lang):
+        url = self.url['SEARCH']
+        if imdb:
+            url += 'imdb:'+str(query)
+            print(url)
+        elif lang:
+            url += ' lang_id:14'
+        elif not lang and not imdb:
+            url += str(query)
+        print(url)
+        return  url
+    def busca(self, query, imdb=False, lang = False):
+        intents =0
+        soup = get_bs(self.makeurl(query,imdb,lang))
+        taula = soup.find_all('tr',{'class': 'odd', 'class' : 'even'})
+        torrents =[]
+        for tr in taula:
+            # print('tr:{}:'.format(type(tr)))
+            if tr is not '':
+                tds = tr.find_all('td')
+                name = tr.find('a',{'class' : 'cellMainLink'}).text
+                magnet = tr.find('a', {'title' : 'Torrent magnet link'}).get('href')
+                tor = 'http:'+tr.find('a', {'title' : 'Download torrent file'}).get('href')
+                info = self.url['BASE']+tr.find('a',{'class' : 'cellMainLink'}).get('href')
+
+                torrents.append(Torrent(name=name, url=tor.split('?')[0], magnet=magnet, info=info))
+                # print(name,info)
+                # print(magnet)
+                # print(tor)
+        print('torrents list\n',torrents)
+        return torrents
+    def getInfo(self,url):
+        info = url
+        try:
+            infosoup = get_bs(url)
+            infodiv = infosoup.find('div',{'class': 'dataList'})
+            print( infodiv)
+            info = infodiv.text
+        except:
+            print('el torrent no te info')
+        return info
+
 BUSCADORS = {'divixtotal':DivixTotal(),
                   'elitetorrent':Eliterorrent(),
-                  'kickass':''}
-# busca('divixtotal', 'ida', False)
+                  'kickass':KickAss()}
+
+# k = KickAss()
+# k.getsearch('ladrona')
+# for t in busca('kickass', 'ida', imdb=1714206):
+#     print(t.getList)
 # e =Eliterorrent()
 # e.busca('gran estafa')
 #dvx = DivixTotal()

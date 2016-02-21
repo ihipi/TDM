@@ -656,7 +656,7 @@
              </layout>
             </widget>
            </item>
-           <item row="0" column="4">
+           <item row="0" column="3">
             <widget class="QGroupBox" name="box_elite">
              <property name="title">
               <string>Opcions EliteTorrent</string>
@@ -690,7 +690,7 @@
                </widget>
               </item>
               <item row="0" column="1">
-               <widget class="QLineEdit" name="lineEdit_2"/>
+               <widget class="QLineEdit" name="amb"/>
               </item>
               <item row="1" column="0">
                <widget class="QLabel" name="label_2">
@@ -700,16 +700,25 @@
                </widget>
               </item>
               <item row="1" column="1">
-               <widget class="QLineEdit" name="lineEdit_3"/>
+               <widget class="QLineEdit" name="sense"/>
               </item>
              </layout>
             </widget>
            </item>
-           <item row="0" column="3">
-            <widget class="Line" name="line_3">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
+           <item row="0" column="4">
+            <widget class="QGroupBox" name="box_kick">
+             <property name="title">
+              <string>Opcions Kickass</string>
              </property>
+             <layout class="QGridLayout" name="gridLayout_13">
+              <item row="0" column="0">
+               <widget class="QCheckBox" name="opt_kick_imdb">
+                <property name="text">
+                 <string>imdb</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </item>
           </layout>

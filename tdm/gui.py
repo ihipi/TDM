@@ -1,5 +1,6 @@
 
-import sys, os
+import sys, os, multiprocessing
+from threading import Thread
 
 from PyQt5 import uic
 from PyQt5.QtCore import Qt
@@ -189,39 +190,51 @@ class Ventana(QMainWindow):
             else:
                 self.listShows.insertTopLevelItems(0, [QTreeWidgetItem(self.listShows, fila)])
 
-    def buscaEvent(self, motor=None, paraula=None,divixserie=None):
+    def buscaEvent(self, motor=None, paraula=None,divixserie=None, imdb=None):
 #         busqueda = DivixTotal().busca(str(self.text_busqueda.text()),self.check_series.isChecked())
         m = motor or self.comboMotors.currentText()
         p = paraula or str(self.text_busqueda.text())
         s = divixserie or self.check_series.isChecked()
+        i = imdb or self.opt_kick_imdb.isChecked()
 
-        self.torrent_temp = torrentsearch.busca(motor= m, paraula=p, divixserie=s)
-        print(self.comboMotors.currentText(), self.text_busqueda.text(), self.check_series.isChecked())
+        self.torrent_temp = torrentsearch.busca(m, p, divixserie=s,imdb=i)
+        print(m, self.text_busqueda.text(),i)
         self.treeResultat.clear()
         for tor in self.torrent_temp:
             row = tor.getList()[:-2]
         # for k in busqueda[0].keys():
             # row = [k,str(busqueda[k][0])]
             print(row)
-            self.treeResultat.insertTopLevelItems(0,[QTreeWidgetItem(self.treeResultat, row)])
+            if len(self.amb.text()) > 1:
+                if self.amb.text() in tor.name:
+                    self.treeResultat.insertTopLevelItems(0,[QTreeWidgetItem(self.treeResultat, row)])
+            else:
+                self.treeResultat.insertTopLevelItems(0,[QTreeWidgetItem(self.treeResultat, row)])
 
     def set_torrent_info(self, item):
         for t in self.torrent_temp:
             if t.name == item.text(0):
                 self.tor_info_name.setText(t.name)
-                self.tor_info_extra.setText(t.info)
+                if t.info[:13] == 'http://kat.cr':
+                    k = torrentsearch.KickAss()
+                    self.tor_info_extra.setText(k.getInfo(t.info))
+                else:
+                    self.tor_info_extra.setText(t.info)
 
     def setTorrentOptions(self):
         motor = self.comboMotors.currentText()
         if motor == 'divixtotal':
-            self.box_elite.hide()
+            self.box_dvx.hide()
+            self.box_kick.hide()
             self.box_dvx.show()
         elif motor == 'elitetorrent':
             self.box_dvx.hide()
+            self.box_kick.hide()
             self.box_elite.show()
         elif motor == 'kickass':
-            pass
-
+            self.box_dvx.hide()
+            self.box_elite.hide()
+            self.box_kick.show()
         ###########################################################
         #                           SERIES                        #
         ###########################################################
@@ -348,7 +361,12 @@ class Ventana(QMainWindow):
                         tviso = tv.TViso()
                         pixmap = QPixmap()
                         res = tviso.getFullInfo(item.text(0), str(media.tipus))
-                        url = 'https://img.tviso.com'+'/{}{}{}'.format(res['images']['country'] or 'XX', IMG['posterM'],res['images']['poster'])
+                        country = 'ES'
+                        try:
+                            country = res['images']['country']
+                        except:
+                            pass
+                        url = 'https://img.tviso.com'+'/{}{}{}'.format( country, IMG['posterM'],res['images']['poster'])
                         print(url)
                         req = Request(url,  headers={'User-Agent': 'Mozilla/5.0'})
                         data = urlopen(req).read()
@@ -432,11 +450,15 @@ class Ventana(QMainWindow):
         idm, name, tipus = item.text(0),item.text(1),int(item.text(2))
         self.text_busqueda.setText(name)
         self.tabs.setCurrentIndex(1)
-        motor = self.comboMotors.currentText()
-        if tipus > 1:
-            self.buscaEvent(motor, name, False)
-        else:
-            self.buscaEvent(motor, name, divixserie = True )
+        self.db.c.execute('select imdb from mycollection where idm={}'.format(idm))
+        imdb = self.db.c.fetchone()[0]
+        motor =  'kickass' # self.comboMotors.currentText()
+        self.buscaEvent(motor,name, imdb= imdb)
+
+        # if tipus > 1:
+        #     self.buscaEvent(motor, name, )
+        # else:
+        #     self.buscaEvent(motor, name, divixserie = True )
 
 def start():
     #Instancia para iniciar una aplicación

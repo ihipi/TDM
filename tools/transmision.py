@@ -11,4 +11,4 @@ def addtorrent(url):
 
     # print(t.get_torrents())
 
-# addtorrent('magnet:?xt=urn:btih:y43mormfjucwr7sd6s5xqokhtpx66sxm&dn=La+Gran+Estafa+%28DVDRip%29+%28EliteTorrent.net%29&tr=http://tpb.tracker.thepiratebay.org:80/announce')
+addtorrent('http://torcache.net/torrent/61CED7D1D51E6EF05BB8BDD398ED32CF03112E5B.torrent')
