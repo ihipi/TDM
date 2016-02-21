@@ -109,14 +109,21 @@ class DivixTotal(object):
                         print(capitol.a.text, '\t'+ self.url+capitol.a.get('href'))
                 return torrents
             else:
-                t = Torrent(name = str(p.a.text),url = self.url+p.a.get('href'))
-                torList.append(t)
-                torrents[str(p.a.text)] = ''+self.url+p.a.get('href')
-            #print(p.a.get('title'),'\t\t',''+self.url+p.a.get('href'))
-        print(torrents)
-        return torrents, torList
+                if '/series/' not in p.a.get('href'):
+                    bsoup = get_bs(self.url+p.a.get( 'href'))
+                    torrent = bsoup.find('div', {'class':'ficha_link_det'})
+                    info = bsoup.find('div', {'class' : 'fichatxt'}).text
+                    # print(info)
+                    torList.append(Torrent(name = p.a.text, url = self.url+torrent.h3.a.get('href')[1:], info = info))
+                    # torrents[str(p.a.text)] = (self.url+torrent.h3.a.get('href')[1:], info)
 
-    # TODO arreglar la busqueda per series de divixtotal
+            #print(p.a.get('title'),'\t\t',''+self.url+p.a.get('href'))
+        print(torList)
+        return torList
+
+    def gettorrent(self):
+        pass
+
     def llistaSeries(self, inicial=None):
         '''
         Busca el llistat sencer de series de divixtotal
@@ -141,7 +148,7 @@ class DivixTotal(object):
 BUSCADORS = {'divixtotal':DivixTotal(),
                   'elitetorrent':Eliterorrent(),
                   'kickass':''}
-
+# busca('divixtotal', 'ida', False)
 # e =Eliterorrent()
 # e.busca('gran estafa')
 #dvx = DivixTotal()

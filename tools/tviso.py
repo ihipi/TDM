@@ -80,6 +80,7 @@ class TViso:
             usuari = tools.getconfig()['usuari']
             contrasenya =tools.getconfig()['password']
         # if time.time()> float(self.auth_expires):
+        print(usuari,contrasenya)
         urluser = 'https://api.tviso.com/user/user_login?auth_token={}&username={}&password={}'.format(self.auth_token, usuari, contrasenya)
         response = requests.get(urluser)
         if response.history:
@@ -190,20 +191,17 @@ class TViso:
         return req
 
     def llistatviso(self):
-        gets = {'auth_token':self.auth_token,'user_token':self.user_token,}
-        llistes =  requests.post('https://api.tviso.com/user/media/lists?auth_token={auth_token}&user_token={user_token}', gets).json()['own']
-        print(llistes)
-        for ll in llistes:
-            if ll['title'] == 'TDManta':
-                return ll
-        return {}
+        gets = {'auth_token':self.auth_token,'id': '56c68b30060f0e793f8b4567'}
+        return requests.post('https://api.tviso.com/media/list?', gets).json()['list']['medias']
+
+
 
     def addMedia(self, idm, mediaType):
         llista = self.llistatviso()
-        print(llista)
+        # print(llista)
         try:
 
-            tdmlistid = llista['id']
+            tdmlistid = '56c68b30060f0e793f8b4567'
             # posts = (self.auth_token, self.user_token, tdmlistid, idm, mediaType)
             # res = requests.post('https://api.tviso.com/media/list/add_media?auth_token={}&user_token={}&id={}&idm={}&mediaType={}'.format(self.auth_token, self.user_token, tdmlistid, idm, mediaType)).json()
             posts = {'auth_token' :self.auth_token,'user_token': self.user_token,'id' : tdmlistid,'idm': idm,'mediaType': mediaType}
@@ -220,7 +218,10 @@ class TViso:
 
 
 # tv = TViso()
-# print(tv.addMedia(69,1))
+# d = tv.llistatviso()
+# print(d)
+# print(tv.a
+# ddMedia(69,1))
 # al = tv.getUserSumary()
 # print(al)
 # for k in al:

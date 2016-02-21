@@ -104,28 +104,36 @@ class Episodi():
 
 class Torrent():
     def __init__(self,**kargs):
-
+        self.name =None
+        self.url = None
+        self.magnet = None
+        self.info = None
         for k,v in kargs.items():
             if k == 'name':
                 self.name = v
             if k == 'url' :
-                self.torrent = v
+                self.url = v
             if k == 'magnet' :
                 self.magnet = v
+            if k == 'info':
+                self.info = v
     def get(self):
-        return {'name' : self.name,"url": self.torrent, 'magnet' : self.magnet}
+        return {'name' : self.name,"url": self.url, 'magnet' : self.magnet}
 
+    def getList(self):
+        """
+        :return: llista [nom, torrent, magnetic, info]
+        """
+        return [self.name, self.url, self.magnet, self.info]
 
 def get_bs(url):
     res = requests.get(url)
     return BeautifulSoup(res.text, 'html.parser')
 
-
 def getconfig():
     f = open(CONFIGFILE, mode='r')
     conf = json.load(f)
     return conf
-
 
 def setconfig(**kargs):
     conf = getconfig()
@@ -145,7 +153,6 @@ def setconfig(**kargs):
     f.close()
     return True
 
-
 def filtra_torrents(**kargs):
 
     print(kargs)
@@ -158,7 +165,6 @@ def filtra_torrents(**kargs):
                 print('Match: ', m)
         else:
             print('No match')
-
 
 def localmedia(tipus):
     """

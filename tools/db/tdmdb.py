@@ -155,8 +155,10 @@ class TDMDB():
                         self.__dbquery('UPDATE mycollection ')
                         if fil != None:
                             cua.task_done()
+                            return posterurl
                         else:
                             sortida = True
+                            return posterurl
                     elif not os.path.exists(posterFile):
                         posterurl = 'https://img.tviso.com'+'/{}{}{}'.format(res['images']['country'], IMG['posterL'],res['images']['poster'])
                         print(posterurl, posterFile )
@@ -166,8 +168,10 @@ class TDMDB():
                         os.system("wget -O {0} {1}".format(posterFile, posterurl))
                         if fil != None:
                             cua.task_done()
+                            return posterurl
                         else:
                             sortida = True
+                            return posterurl
                     if not os.path.exists(backdropFile):
                         backurl = 'https://img.tviso.com'+'/{}{}{}'.format(res['images']['country'] or 'ES', IMG['fonsL'],res['images']['backdrop'])
                         print(posterurl, posterFile )
@@ -177,14 +181,18 @@ class TDMDB():
                         os.system("wget -O {0} {1}".format(backdropFile, backurl))
                         if fil != None:
                             cua.task_done()
+                            return posterurl
                         else:
                             sortida = True
+                            return posterurl
                     else:
                         print('La imatge ja esta descarregada')
                         if fil != None:
                             cua.task_done()
+                            return posterurl
                         else:
                             sortida = True
+                            return posterurl
 
 
                 else:
@@ -297,27 +305,46 @@ class TDMDB():
         image_file = open(ROOTDB+'/imatges/imatges_dict', mode='r+')
         images = json.load(image_file)
         items_llista = []
+        items_dict = {}
         # print(tviso.llistatviso()['last_medias'])
-        for m in tviso.llistatviso()['last_medias']:
-            items_llista.append(m['name'])
+        for m in tviso.llistatviso():
+            items_dict[m['name']] = (m['idm'], m['mediaType'])
+            print(m['name'],items_dict[m['name']])
+            print(res)
         for media in res['collection']['medias'].keys():
             tipus, idm = media.split('-')
             idms = images.keys()
             dbexist = self.__dbquery('SELECT name FROM mycollection WHERE idm= ?', idm)
             self.db.commit()
-            print('query de la serie a mycollection', dbexist)
+            print('*'*50,'\n', 'query de la serie a mycollection', dbexist,'*'*50,'\n')
             if str(idm) not in idms:
                 print(idm, idms)
                 print('Queuing:', idm, tipus)
                 self.wgetImage(idm, tipus)
                 # per fer servir la cua de descarregues
                 # self.get_image_queue.put((idm,tipus))
-            print('dbexist: ',dbexist)
+
             if dbexist == []:
+                print('exists == []')
                 self.addSerie(idm, tipus)
+                tviso.addMedia(idm,tipus)
             # TODO : Comprovar que si esta a la llista
-            elif dbexist[0] not in items_llista:
-                tviso.addMedia(idm, tipus)
+            else:
+                print('exists != []')
+
+                if dbexist[0][0] not in items_dict.keys():
+                    print('exists not in dict')
+                    print(dbexist[0][0], items_dict.keys())
+                    tviso.addMedia(idm, tipus)
+                elif dbexist[0][0] in items_dict.keys():
+                    print('exists in dict')
+
+                    del items_dict[dbexist[0][0]]
+        for k,v in items_dict.items():
+            print('adding to db ', k)
+            tviso.addMedia(v[0],v[1])
+                
+
         self.get_image_queue.join()
 
 #            self.wgetImage(media.split('-')[1],media.split('-')[0])

@@ -5,8 +5,8 @@ from PyQt5 import uic
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QBrush
 from PyQt5.QtWidgets import QApplication, QMessageBox, QMainWindow, QTreeWidgetItem, QFileDialog, QSplitter, QHBoxLayout, QFrame
-
-from tools import torrentsearch, GUI, setconfig,getconfig, MEDIATYPE, ROOTDB, transmision as tr, tviso as tv, SERIESTATE,PELISTATE
+from urllib.request import Request, urlopen
+from tools import torrentsearch,IMG, GUI, setconfig,getconfig, MEDIATYPE, ROOTDB, transmision as tr, tviso as tv, SERIESTATE,PELISTATE
 import tools
 from tdm.dialegs import TVisoLogin, TransmissionConf
 # from tools.torrentsearch import  BUSCADORS
@@ -75,6 +75,8 @@ class Ventana(QMainWindow):
         # f.addWidget(torrent_spliter)
         self.buto_busqueda.clicked.connect(self.buscaEvent)
         self.btnDownload.clicked.connect(lambda: self.download(self.treeResultat.currentItem()))
+        self.comboMotors.currentIndexChanged.connect(self.setTorrentOptions)
+        self.treeResultat.itemSelectionChanged.connect(lambda: self.set_torrent_info(self.treeResultat.currentItem()))
         self.torrent_temp =[]
 
         ###########################################################
@@ -83,7 +85,7 @@ class Ventana(QMainWindow):
 
 
         hsplit= QSplitter(Qt.Horizontal)
-        hsplit.addWidget(self.listShows)
+        hsplit.addWidget(self.listShowsW)
         hsplit.addWidget(self.mediaInfo)
         self.mediaBaix.layout().addWidget(hsplit)
         vsplt= QSplitter(Qt.Vertical)
@@ -109,6 +111,7 @@ class Ventana(QMainWindow):
         self.lineFiltra.textChanged.connect(lambda: self.get_items(self.lineFiltra.text()))
         #mostra informacio
         self.listShows.clicked.connect(lambda: self.set_show_info(self.listShows.currentItem()))
+        self.listShows.itemSelectionChanged.connect(lambda: self.set_show_info(self.listShows.currentItem()))
         #mostra info capitol
         self.treeEpisodis.clicked.connect(lambda: self.set_episodi_info(self.treeEpisodis.currentItem().text(1)))
         #al seleccionar un capitol
@@ -117,7 +120,7 @@ class Ventana(QMainWindow):
         # busca a tviso
         self.btn_busca_media.clicked.connect(lambda: self.get_search(self.line_busca_media.text()))
         # busca un torrent
-        self.search_torrent.clicked.connect(lambda: self.getTorrent(self.listShows.currentItem()))
+        self.search_torrent.clicked.connect(lambda: self.searchMediaTorrent(self.listShows.currentItem()))
 
     def closeEvent(self, event):
         resultat = QMessageBox.question(self,"sortir...","Vols sortir de l'aplicacio?",QMessageBox.Yes | QMessageBox.No)
@@ -169,7 +172,6 @@ class Ventana(QMainWindow):
         ###########################################################
 
     def download(self, item):
-        # TODO agafar un torrent i passarlo al transmission
         print(item.text(1))
         tr.addtorrent(item.text(1))
 
@@ -193,25 +195,30 @@ class Ventana(QMainWindow):
         p = paraula or str(self.text_busqueda.text())
         s = divixserie or self.check_series.isChecked()
 
-        busqueda = torrentsearch.busca(motor= m, paraula=p, divixserie=s)
+        self.torrent_temp = torrentsearch.busca(motor= m, paraula=p, divixserie=s)
         print(self.comboMotors.currentText(), self.text_busqueda.text(), self.check_series.isChecked())
-        #busqueda = DivixTotal().busca('fargo',True)
         self.treeResultat.clear()
-        for k in busqueda.keys():
-            row = [k,str(busqueda[k][0])]
+        for tor in self.torrent_temp:
+            row = tor.getList()[:-2]
+        # for k in busqueda[0].keys():
+            # row = [k,str(busqueda[k][0])]
             print(row)
             self.treeResultat.insertTopLevelItems(0,[QTreeWidgetItem(self.treeResultat, row)])
 
-#             item = QListWidgetItem(k)
-#             self.list_resultat.addItem(item)
+    def set_torrent_info(self, item):
+        for t in self.torrent_temp:
+            if t.name == item.text(0):
+                self.tor_info_name.setText(t.name)
+                self.tor_info_extra.setText(t.info)
 
-    def setTorrentInfo(self):
-        motor = self.comoMotors
+    def setTorrentOptions(self):
+        motor = self.comboMotors.currentText()
         if motor == 'divixtotal':
-
-            pass
+            self.box_elite.hide()
+            self.box_dvx.show()
         elif motor == 'elitetorrent':
-            pass
+            self.box_dvx.hide()
+            self.box_elite.show()
         elif motor == 'kickass':
             pass
 
@@ -294,6 +301,7 @@ class Ventana(QMainWindow):
             if not found:
                 self.db.get_image_queue(idm,tipus)
 
+
             #creem i assignem la
             # Objecte label ---------- imatge - escalem (tamany definit de Label), Mante l'aspecte, ???)
 
@@ -318,16 +326,37 @@ class Ventana(QMainWindow):
                 self.setSinopsy(media.plot)
                 print()
                 if item.text(2) == '1':
-                    self.labelRating.setText(SERIESTATE[str(media.estat)])
+                    if self.radioLocal.isChecked():
+                        self.labelRating.setText(SERIESTATE[str(media.estat)])
+                    else:
+                        tviso = tv.TViso()
+                        pixmap = QPixmap()
+                        res = tviso.getFullInfo(item.text(0), str(media.tipus))
+                        url = 'https://img.tviso.com'+'/{}{}{}'.format(res['images']['country'] or 'XX', IMG['posterL'],res['images']['backdrop'])
+                        print(url)
+                        data = request.urlretrieve(url)
+                        pixmap.load(data)
+                        self.labelImatge.setPixmap(pixmap.scaled(self.labelImatge.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
 
                     self.extrainfo.hide()
                     self.treeEpisodis.show()
                     self.addEpisodis(media.idm)
                 else:
-                    self.labelRating.setText(PELISTATE[str(media.estat)])
+                    if self.radioLocal.isChecked():
+                        self.labelRating.setText(PELISTATE[str(media.estat)])
+                    else:
+                        tviso = tv.TViso()
+                        pixmap = QPixmap()
+                        res = tviso.getFullInfo(item.text(0), str(media.tipus))
+                        url = 'https://img.tviso.com'+'/{}{}{}'.format(res['images']['country'] or 'XX', IMG['posterM'],res['images']['poster'])
+                        print(url)
+                        req = Request(url,  headers={'User-Agent': 'Mozilla/5.0'})
+                        data = urlopen(req).read()
+                        pixmap.loadFromData(data)
+                        self.labelImatge.setPixmap(pixmap.scaled(self.labelImatge.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
+
                     self.extrainfo.show()
                     self.treeEpisodis.hide()
-
 
     def set_episodi_info(self, item):
         try:
@@ -399,13 +428,15 @@ class Ventana(QMainWindow):
         except Exception as e:
             print('seleccio capitol fallada : {}'.format(e))
 
-    def getTorrent(self, item):
-        self.tabs.setCurrentIndex(1)
+    def searchMediaTorrent(self, item):
         idm, name, tipus = item.text(0),item.text(1),int(item.text(2))
+        self.text_busqueda.setText(name)
+        self.tabs.setCurrentIndex(1)
+        motor = self.comboMotors.currentText()
         if tipus > 1:
-            self.buscaEvent('divixtotal',name, False)
+            self.buscaEvent(motor, name, False)
         else:
-            self.buscaEvent('divixtotal',name,divixserie=True )
+            self.buscaEvent(motor, name, divixserie = True )
 
 def start():
     #Instancia para iniciar una aplicación

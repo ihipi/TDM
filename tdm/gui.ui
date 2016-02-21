@@ -36,7 +36,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_media">
        <attribute name="title">
@@ -379,124 +379,126 @@
              </layout>
             </widget>
            </item>
-           <item row="2" column="0">
-            <layout class="QVBoxLayout" name="verticalLayout">
-             <item>
-              <widget class="QPushButton" name="btnAddShow">
-               <property name="text">
-                <string>Afegir</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="btnDeleteShow">
-               <property name="text">
-                <string>Borrar</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_2">
-               <item>
-                <widget class="QLineEdit" name="lineFiltra"/>
-               </item>
-               <item>
-                <widget class="QPushButton" name="btn_blank">
-                 <property name="maximumSize">
-                  <size>
-                   <width>30</width>
-                   <height>16777215</height>
-                  </size>
+           <item row="2" column="1">
+            <widget class="QWidget" name="listShowsW" native="true">
+             <layout class="QVBoxLayout" name="verticalLayout_6">
+              <item>
+               <widget class="QPushButton" name="btnAddShow">
+                <property name="text">
+                 <string>Afegir</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnDeleteShow">
+                <property name="text">
+                 <string>Borrar</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_2">
+                <item>
+                 <widget class="QLineEdit" name="lineFiltra"/>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="btn_blank">
+                  <property name="maximumSize">
+                   <size>
+                    <width>30</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>X</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <widget class="QTreeWidget" name="listShows">
+                <property name="minimumSize">
+                 <size>
+                  <width>300</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="tabKeyNavigation">
+                 <bool>false</bool>
+                </property>
+                <property name="alternatingRowColors">
+                 <bool>true</bool>
+                </property>
+                <property name="sortingEnabled">
+                 <bool>true</bool>
+                </property>
+                <property name="headerHidden">
+                 <bool>true</bool>
+                </property>
+                <column>
+                 <property name="text">
+                  <string notr="true">TViso_id</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Name</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Type</string>
+                 </property>
+                </column>
+                <item>
+                 <property name="text">
+                  <string>43523</string>
                  </property>
                  <property name="text">
-                  <string>X</string>
+                  <string>sagf</string>
                  </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <widget class="QTreeWidget" name="listShows">
-               <property name="minimumSize">
-                <size>
-                 <width>300</width>
-                 <height>0</height>
-                </size>
-               </property>
-               <property name="tabKeyNavigation">
-                <bool>false</bool>
-               </property>
-               <property name="alternatingRowColors">
-                <bool>true</bool>
-               </property>
-               <property name="sortingEnabled">
-                <bool>true</bool>
-               </property>
-               <property name="headerHidden">
-                <bool>true</bool>
-               </property>
-               <column>
-                <property name="text">
-                 <string notr="true">TViso_id</string>
-                </property>
-               </column>
-               <column>
-                <property name="text">
-                 <string>Name</string>
-                </property>
-               </column>
-               <column>
-                <property name="text">
-                 <string>Type</string>
-                </property>
-               </column>
-               <item>
-                <property name="text">
-                 <string>43523</string>
-                </property>
-                <property name="text">
-                 <string>sagf</string>
-                </property>
-                <property name="text">
-                 <string>2</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>34252</string>
-                </property>
-                <property name="text">
-                 <string>sgsag</string>
-                </property>
-                <property name="text">
-                 <string>1</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>34234</string>
-                </property>
-                <property name="text">
-                 <string>gfjhkg</string>
-                </property>
-                <property name="text">
-                 <string>2</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>3256</string>
-                </property>
-                <property name="text">
-                 <string>safga</string>
-                </property>
-                <property name="text">
-                 <string>1</string>
-                </property>
-               </item>
-              </widget>
-             </item>
-            </layout>
+                 <property name="text">
+                  <string>2</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>34252</string>
+                 </property>
+                 <property name="text">
+                  <string>sgsag</string>
+                 </property>
+                 <property name="text">
+                  <string>1</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>34234</string>
+                 </property>
+                 <property name="text">
+                  <string>gfjhkg</string>
+                 </property>
+                 <property name="text">
+                  <string>2</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>3256</string>
+                 </property>
+                 <property name="text">
+                  <string>safga</string>
+                 </property>
+                 <property name="text">
+                  <string>1</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -561,15 +563,8 @@
               <bool>false</bool>
              </property>
              <layout class="QGridLayout" name="gridLayout_15">
-              <item row="1" column="0">
-               <widget class="QLabel" name="label_4">
-                <property name="text">
-                 <string>TextLabel</string>
-                </property>
-               </widget>
-              </item>
               <item row="0" column="0">
-               <widget class="QLabel" name="label_3">
+               <widget class="QLabel" name="tor_info_name">
                 <property name="text">
                  <string>Torrent</string>
                 </property>
@@ -581,6 +576,9 @@
                  <string>Descarrega</string>
                 </property>
                </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QTextEdit" name="tor_info_extra"/>
               </item>
              </layout>
             </widget>
@@ -640,7 +638,7 @@
             <number>5</number>
            </property>
            <item row="0" column="2">
-            <widget class="QGroupBox" name="groupBox_4">
+            <widget class="QGroupBox" name="box_dvx">
              <property name="title">
               <string>Opcions DivixTotal</string>
              </property>
@@ -659,7 +657,7 @@
             </widget>
            </item>
            <item row="0" column="4">
-            <widget class="QGroupBox" name="groupBox_2">
+            <widget class="QGroupBox" name="box_elite">
              <property name="title">
               <string>Opcions EliteTorrent</string>
              </property>
@@ -965,38 +963,6 @@
  <resources/>
  <connections>
   <connection>
-   <sender>radioGlobal</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>btnAddShow</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>929</x>
-     <y>154</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>607</x>
-     <y>155</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioGlobal</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>btnDeleteShow</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>970</x>
-     <y>154</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>728</x>
-     <y>155</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>radioLocal</sender>
    <signal>toggled(bool)</signal>
    <receiver>btnDeleteShow</receiver>
@@ -1031,38 +997,6 @@
   <connection>
    <sender>radioGlobal</sender>
    <signal>toggled(bool)</signal>
-   <receiver>treeEpisodis</receiver>
-   <slot>hide()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>724</x>
-     <y>152</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>687</x>
-     <y>665</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioLocal</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>treeEpisodis</receiver>
-   <slot>show()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>270</x>
-     <y>152</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>687</x>
-     <y>665</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioGlobal</sender>
-   <signal>toggled(bool)</signal>
    <receiver>extrainfo</receiver>
    <slot>show()</slot>
    <hints>
@@ -1089,6 +1023,70 @@
     <hint type="destinationlabel">
      <x>704</x>
      <y>592</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioGlobal</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>treeEpisodis</receiver>
+   <slot>hide()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>724</x>
+     <y>152</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>687</x>
+     <y>665</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioGlobal</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>btnDeleteShow</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>970</x>
+     <y>154</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>728</x>
+     <y>155</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioGlobal</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>btnAddShow</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>929</x>
+     <y>154</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>607</x>
+     <y>155</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioLocal</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>treeEpisodis</receiver>
+   <slot>show()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>270</x>
+     <y>152</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>687</x>
+     <y>665</y>
     </hint>
    </hints>
   </connection>
