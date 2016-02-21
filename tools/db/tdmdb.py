@@ -338,12 +338,11 @@ class TDMDB():
                     tviso.addMedia(idm, tipus)
                 elif dbexist[0][0] in items_dict.keys():
                     print('exists in dict')
-
                     del items_dict[dbexist[0][0]]
-        for k,v in items_dict.items():
+
+        for k, v in items_dict.items():
             print('adding to db ', k)
             tviso.addMedia(v[0],v[1])
-                
 
         self.get_image_queue.join()
 

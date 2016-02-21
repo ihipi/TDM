@@ -28,7 +28,7 @@ class Eliterorrent():
                      'peliculesHDRIP':''+self.url+ '/categoria/13/peliculas-hdrip',}
 
     def busca(self, busqueda = ''):
-        torrents={}
+        torrents=[]
         url =''+self.url+'/busqueda/'+ busqueda
         resp = requests.get(''+self.url+'/busqueda/'+ busqueda)
 
@@ -37,10 +37,12 @@ class Eliterorrent():
         soup = get_bs(url)
         lis = soup.find_all('li')
         for li in lis:
-            torrents[li.div.a.get('title')]= self.url+li.a.get('href')
+            torrents.append(Torrent(name=li.div.a.get('title'), url=self.url+li.a.get('href')))
         print(torrents)
-        for n in torrents.keys():
-            torrents[n] = self.getTorrent(torrents[n])
+        for t in torrents:
+            tor, mag = self.getTorrent(t.url)
+            t.url =tor
+            t.magnet = mag
         return torrents
 
         print('ended')

@@ -37,7 +37,9 @@ class TViso:
 
             try:
                 print('actualitzant tokens...')
+                print('auth_token...')
                 self.getAuthToken()
+                print('user_token...')
                 self.getUserToken()
             except Exception as e:
                 print(e)
@@ -71,23 +73,23 @@ class TViso:
     def getUserToken(self):
         usuari = contrasenya = None
 
-        if tools.getconfig()['usuari'] != None and tools.getconfig()['password'] != None:
+        if tools.getconfig()['usuari'] is not None and tools.getconfig()['password'] is not None:
             usuari = tools.getconfig()['usuari']
-            contrasenya =tools.getconfig()['password']
+            contrasenya = tools.getconfig()['password']
         else:
             tools.setconfig(usuari=str(input('usuari de TViso ')))
             tools.setconfig(password=str(getpass.getpass()))
             usuari = tools.getconfig()['usuari']
-            contrasenya =tools.getconfig()['password']
+            contrasenya = tools.getconfig()['password']
         # if time.time()> float(self.auth_expires):
-        print(usuari,contrasenya)
+        print('usuari, contrassenya',usuari, contrasenya)
         urluser = 'https://api.tviso.com/user/user_login?auth_token={}&username={}&password={}'.format(self.auth_token, usuari, contrasenya)
         response = requests.get(urluser)
         if response.history:
             print("Esperant el token d'usuari...")
             
             print(response.status_code, response.url)
-            #creem un objecte url parse per trobar el usertoken
+            # creem un objecte url parse per trobar el usertoken
             resp = urlparse(response.url)
             query = parse_qs(resp.query)
             if query.get('user_token'):
