@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QApplication, QMessageBox, QMainWindow, QTreeWidgetI
 from urllib.request import Request, urlopen
 from tools import torrentsearch,IMG, GUI, setconfig,getconfig, MEDIATYPE, ROOTDB, transmision as tr, tviso as tv, SERIESTATE,PELISTATE
 import tools
-from tdm.dialegs import TVisoLogin, TransmissionConf
+from tdm.dialegs import TVisoLogin, TransmissionConf, SeleccionaMedia
 # from tools.torrentsearch import  BUSCADORS
 from tools.db.tdmdb import TDMDB
 
@@ -24,6 +24,7 @@ class Ventana(QMainWindow):
         # Carregar la configuracio de l'arxiu .ui en el objeto
         self.dialog_03 = TransmissionConf()
         self.dialog_02 = TVisoLogin()
+
         uic.loadUi(GUI, self)
 
         # self.setWindowTitle("Cambiando el título de la ventana")
@@ -62,6 +63,9 @@ class Ventana(QMainWindow):
         self.btn_transmission.clicked.connect(self.callTransmissionConf)
         self.conf_radio_series.toggled.connect(self._pobla_folders)
         self.conf_radio_pelis.toggled.connect(self._pobla_folders)
+        self.line_series.setText(tools.getconfig()['dir_series'])
+        self.line_pelis.setText(tools.getconfig()['dir_pelis'])
+        self.treeFolder.doubleClicked.connect(lambda: self.definemedia(self.treeFolder.currentItem().text(0)))
 
 
         ###########################################################
@@ -78,6 +82,7 @@ class Ventana(QMainWindow):
         self.btnDownload.clicked.connect(lambda: self.download(self.treeResultat.currentItem()))
         self.comboMotors.currentIndexChanged.connect(self.setTorrentOptions)
         self.treeResultat.itemSelectionChanged.connect(lambda: self.set_torrent_info(self.treeResultat.currentItem()))
+
         self.torrent_temp =[]
 
         ###########################################################
@@ -144,9 +149,21 @@ class Ventana(QMainWindow):
         self.dialog_03.raise_()
 
     def _pobla_folders(self):
-        if self.conf_radio_series.toggled:
+        self.treeFolder.clear()
+        if self.conf_radio_series.isChecked():
             for f in tools.localmedia('dir_series'):
-                self.treeFolder.insertTopLevelItems(0, [QTreeWidgetItem(self.listShows, f)])
+                print(f)
+                self.treeFolder.insertTopLevelItems(0, [QTreeWidgetItem(self.treeFolder, f)])
+        if self.conf_radio_pelis.isChecked():
+            for f in tools.localmedia('dir_pelis'):
+                print(f)
+                self.treeFolder.insertTopLevelItems(0, [QTreeWidgetItem(self.treeFolder, f)])
+
+    def definemedia(self, title):
+        list = self.tv.searchTitle(title)
+        self.dialog_media = SeleccionaMedia(list)
+        self.dialog_media.show()
+        self.dialog_media.raise_()
 
     def setmediadirectory(self, tipus):
         media_dir = None
@@ -173,8 +190,15 @@ class Ventana(QMainWindow):
         ###########################################################
 
     def download(self, item):
-        print(item.text(1))
-        tr.addtorrent(item.text(1))
+        print(item.text(0))
+        url = None
+        for t in self.torrent_temp:
+            if t.name == item.text(0):
+                if t.magnet:
+                    url = t.magnet
+                else:
+                    url = t.url
+        tr.addtorrent(url)
 
     def poblaListShow(self,):
         self.listShows.clear()

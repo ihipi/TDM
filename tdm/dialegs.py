@@ -1,7 +1,7 @@
 import sys
 from tools import DIR_PELIS,DIR_SERIES,setconfig
 from PyQt5.QtWidgets import (QMainWindow, QTextEdit, QFormLayout, QLabel,
-    QDialog, QFileDialog, QApplication, QVBoxLayout, QLineEdit,QPushButton)
+                             QDialog, QFileDialog, QApplication, QVBoxLayout, QLineEdit, QPushButton, QComboBox)
 from PyQt5.QtGui import QIcon
 
 
@@ -81,6 +81,14 @@ class TransmissionConf(QDialog):
             len(self.textPass.text()) >=1):
             setconfig(usuari = self.textName.text(), password = self.textPass.text() )
             self.accept()
+class SeleccionaMedia(QDialog):
+    def __init__(self, list):
+        QDialog.__init__(self)
+        layout = QFormLayout(self)
+        self.opcions = QComboBox()
+        for media in list:
+            self.opcions.addItem(media.name)
+        layout.addWidget(self.opcions)
 
 def logingTviso():
     ex = TVisoLogin()
@@ -95,3 +103,7 @@ def confTransmission():
     ex.show()
     ex.raise_()
 
+def confmedia(list):
+    ex = SeleccionaMedia(list)
+    ex.show()
+    ex.raise_()

@@ -11,4 +11,4 @@ def addtorrent(url):
 
     # print(t.get_torrents())
 
-addtorrent('http://torcache.net/torrent/61CED7D1D51E6EF05BB8BDD398ED32CF03112E5B.torrent')
+# addtorrent('http://torcache.net/torrent/61CED7D1D51E6EF05BB8BDD398ED32CF03112E5B.torrent')

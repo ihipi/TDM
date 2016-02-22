@@ -173,7 +173,7 @@ def localmedia(tipus):
     :return: llista de tuplas amb (nom, ruta) dels directoris
     """
     dir = getconfig()[tipus]
-    return [(f, os.path.join(dir, f)) for f in os.listdir(dir) if not os.path.isfile(os.path.join(dir, f))]
+    return [[f, os.path.join(dir, f)] for f in os.listdir(dir) if not os.path.isfile(os.path.join(dir, f))]
 
 
 # ###########################################
